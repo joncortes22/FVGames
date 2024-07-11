@@ -201,12 +201,24 @@ public class MyFrame extends JFrame {
 
                     cart.add(itemToCart);
                 } else {
+                    boolean productFound = false;
                     for (HashMap<String, String> item : cart){
+                        String str1 = item.get("name");
+                        String str2 = Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName();
                         if (item.get("name").equals(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName())){
                             int itemBought = Integer.parseInt(item.get("unitBought"));
                             itemBought = itemBought + Integer.parseInt(String.valueOf(spnQuantity.getValue()));
                             item.put("unitBought", String.valueOf(itemBought));
+                            productFound = true;
+                            break;
                         }
+                    }
+                    if (!productFound){
+                        itemToCart.put("name", Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName());
+                        itemToCart.put("unitPrice", String.valueOf(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getUnitPrice()));
+                        itemToCart.put("unitBought", String.valueOf(spnQuantity.getValue()));
+
+                        cart.add(itemToCart);
                     }
                 }
 

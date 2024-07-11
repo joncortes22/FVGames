@@ -19,7 +19,7 @@ public class Main {
         inventory.add(product5);
         inventory.add(product6);
 
-        /*MyFrame login = new MyFrame("Create User", 480, 310, "buy");*/
+        MyFrame login = new MyFrame("Create User", 480, 310, "buy");
         /*MyFrame login = new MyFrame("Create User", 480, 550, "user");*/
         /*MyFrame login = new MyFrame("Login", 500, 280, "login");*/
     }

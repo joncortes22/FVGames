@@ -40,6 +40,18 @@ public class Item {
         return responseArray;
     }
 
+    public static Item extractProductSelected(String name){
+        ArrayList<Item> itemList = new ArrayList<Item>();
+        Item itemSelected = null;
+        for (Item item : Main.inventory){
+            if (item.getName().equals(name)){
+                itemSelected = item;
+            }
+        }
+        return itemSelected;
+    }
+
+
     public static void setNewAvailability(String name, int count){
         for (Item item : Main.inventory){
             if (item.getName().equals(name)){

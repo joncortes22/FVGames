@@ -12,9 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 public class MyFrame extends JFrame {
+
+    static ArrayList<HashMap<String, String>> cart = new ArrayList<>();
 
     public MyFrame(String name, int width, int height, String winCall) throws IOException {
         /*
@@ -39,6 +42,9 @@ public class MyFrame extends JFrame {
                 break;
             case "login":
                 winLoginOptions();
+                break;
+            case "finishPurchase":
+                winFinishPurchase();
                 break;
         }
 
@@ -139,7 +145,8 @@ public class MyFrame extends JFrame {
         /*
          * Este método declara y añade los objetos del menú principal
          * */
-        ArrayList<Item> cart = new ArrayList<Item>();
+        
+
         AtomicInteger cartCount = new AtomicInteger(0);
 
         BufferedImage originalImage = ImageIO.read(new File("img/shoppingcart.png"));
@@ -172,8 +179,9 @@ public class MyFrame extends JFrame {
         cmbProducts.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                spnQuantity.setVisible(true);
                 String selectedProduct = (String) cmbProducts.getSelectedItem();
+
+                spnQuantity.setVisible(true);
                 spnQuantity.setValue(1);
                 numberModel.setMaximum(Item.getProductAvailability(selectedProduct));
             }
@@ -183,6 +191,26 @@ public class MyFrame extends JFrame {
         btnAddProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                HashMap<String, String> itemToCart = new HashMap<String, String>();
+
+                if (cart.size() == 0){
+                    itemToCart.put("name", Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName());
+                    itemToCart.put("unitPrice", String.valueOf(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getUnitPrice()));
+                    itemToCart.put("unitBought", String.valueOf(spnQuantity.getValue()));
+
+                    cart.add(itemToCart);
+                } else {
+                    for (HashMap<String, String> item : cart){
+                        if (item.get("name").equals(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName())){
+                            int itemBought = Integer.parseInt(item.get("unitBought"));
+                            itemBought = itemBought + Integer.parseInt(String.valueOf(spnQuantity.getValue()));
+                            item.put("unitBought", String.valueOf(itemBought));
+                        }
+                    }
+                }
+
+
                 cartCount.incrementAndGet();
                 lblCartCount.setText(String.valueOf(cartCount));
                 Item.setNewAvailability((String) cmbProducts.getSelectedItem(), (Integer) spnQuantity.getValue());
@@ -198,10 +226,75 @@ public class MyFrame extends JFrame {
         });
         btnAddProduct.setBounds(60, 180, 100, 40);
 
+        JButton btnFinishPurchase = new JButton("Finish");
+        btnFinishPurchase.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (cart.isEmpty()){
+                        JOptionPane.showMessageDialog(null,
+                                "Cart is Empty",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        setVisible(true);
+                    } else{
+                        dispose();
+                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 480, 550, "finishPurchase");
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        btnFinishPurchase.setBounds(170, 180, 100, 40);
+
         add(lblCartImage);
         add(lblTitle);add(lblProduct);add(lblQuantity);add(lblCartCount);
         add(cmbProducts);add(spnQuantity);
-        add(btnAddProduct);
+        add(btnAddProduct);add(btnFinishPurchase);
+    }
+
+    private void winFinishPurchase() throws IOException {
+         /** Este método declara y añade los objetos del menú principal
+         * */
+
+
+        JLabel lblTitle = new JLabel("Cart");
+        lblTitle.setBounds(170, 20, 200, 50);
+
+        String[] listData = new String[cart.size()];
+        int counter = 0;
+        for (HashMap<String, String> item : cart){
+            int itemTotal = Integer.parseInt(item.get("unitPrice")) * Integer.parseInt(item.get("unitBought"));
+            listData[counter] = item.get("name") + " x" + item.get("unitBought") + " = $" + String.valueOf(itemTotal);
+            counter++;
+        }
+
+        // Step 3: Create the JList with the data
+        JList<String> cartList = new JList<>(listData);
+
+        // Step 4: Add the JList to a JScrollPane
+        JScrollPane scrollPane = new JScrollPane(cartList);
+
+        scrollPane.setBounds(60, 70, 300, 50);
+
+
+
+        JButton btnAddProduct = new JButton("Add to Cart");
+        btnAddProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                revalidate();
+                repaint();
+
+            }
+        });
+        btnAddProduct.setBounds(60, 400, 100, 40);
+
+
+
+        add(lblTitle);add(scrollPane);
     }
 
     private void winLoginOptions() {

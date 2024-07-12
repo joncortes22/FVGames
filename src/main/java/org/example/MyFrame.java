@@ -167,7 +167,6 @@ public class MyFrame extends JFrame {
         SpinnerNumberModel numberModel = new SpinnerNumberModel(1, 1, 1, 1);
         JSpinner spnQuantity = new JSpinner(numberModel);
         spnQuantity.setBounds(170, 130, 200, 30);
-        spnQuantity.setVisible(false);
 
         JLabel lblProduct = new JLabel("Product:");
         lblProduct.setBounds(60, 70, 200, 50);
@@ -181,7 +180,6 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String selectedProduct = (String) cmbProducts.getSelectedItem();
 
-                spnQuantity.setVisible(true);
                 spnQuantity.setValue(1);
                 numberModel.setMaximum(Item.getProductAvailability(selectedProduct));
             }
@@ -251,7 +249,7 @@ public class MyFrame extends JFrame {
                         setVisible(true);
                     } else{
                         dispose();
-                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 480, 550, "finishPurchase");
+                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 440, 410, "finishPurchase");
                     }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -271,13 +269,14 @@ public class MyFrame extends JFrame {
          * */
 
 
-        JLabel lblTitle = new JLabel("Cart");
-        lblTitle.setBounds(170, 20, 200, 50);
+        JLabel lblTitle = new JLabel("Shopping Cart");
+        lblTitle.setBounds(170, 15, 200, 50);
 
         String[] listData = new String[cart.size()];
-        int counter = 0;
+        int counter = 0, purchaseTotal = 0;
         for (HashMap<String, String> item : cart){
             int itemTotal = Integer.parseInt(item.get("unitPrice")) * Integer.parseInt(item.get("unitBought"));
+            purchaseTotal = purchaseTotal + itemTotal;
             listData[counter] = item.get("name") + " x" + item.get("unitBought") + " = $" + String.valueOf(itemTotal);
             counter++;
         }
@@ -288,12 +287,32 @@ public class MyFrame extends JFrame {
         // Step 4: Add the JList to a JScrollPane
         JScrollPane scrollPane = new JScrollPane(cartList);
 
-        scrollPane.setBounds(60, 70, 300, 50);
+        scrollPane.setBounds(60, 70, 300, 120);
+
+
+        JLabel lblTotal = new JLabel("Total:");
+        lblTotal.setBounds(60, 185, 200, 50);
+
+        JLabel lblTaxRate = new JLabel("Tax Rate:");
+        lblTaxRate.setBounds(60, 215, 200, 50);
+
+        JLabel lblTotalAndTaxRate = new JLabel("Total + tax:");
+        lblTotalAndTaxRate.setBounds(60, 245, 200, 50);
+
+        JLabel lblTotalValue = new JLabel("$" + String.valueOf(purchaseTotal));
+        lblTotalValue.setBounds(310, 185, 200, 50);
+
+        JLabel lblTaxRateValue = new JLabel("13%");
+        lblTaxRateValue.setBounds(310, 215, 200, 50);
+
+        String totalPlusTax = String.valueOf((purchaseTotal*0.13)+purchaseTotal);
+        JLabel lblTotalAndTaxRateValue = new JLabel("$" + totalPlusTax);
+        lblTotalAndTaxRateValue.setBounds(310, 245, 200, 50);
 
 
 
-        JButton btnAddProduct = new JButton("Add to Cart");
-        btnAddProduct.addActionListener(new ActionListener() {
+        JButton btnBuy = new JButton("Buy");
+        btnBuy.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -302,11 +321,26 @@ public class MyFrame extends JFrame {
 
             }
         });
-        btnAddProduct.setBounds(60, 400, 100, 40);
+        btnBuy.setBounds(60, 295, 100, 40);
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                revalidate();
+                repaint();
+
+            }
+        });
+        btnCancel.setBounds(180, 295, 100, 40);
 
 
 
         add(lblTitle);add(scrollPane);
+        add(lblTotal);add(lblTaxRate);add(lblTotalAndTaxRate);
+        add(lblTotalValue);add(lblTaxRateValue);add(lblTotalAndTaxRateValue);
+        add(btnBuy);add(btnCancel);
     }
 
     private void winLoginOptions() {

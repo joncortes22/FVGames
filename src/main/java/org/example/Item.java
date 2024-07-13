@@ -18,6 +18,14 @@ public class Item {
         this.unitPrice = unitPrice;
     }
 
+    public Item(Item item) {
+        this.id = item.getId();
+        this.category = item.getCategory();
+        this.name = item.getName();
+        this.availability = item.getAvailability();
+        this.unitPrice = item.getUnitPrice();
+    }
+
     public Item[] getProductsByCategory(String category){
         ArrayList<Item> itemList = new ArrayList<Item>();
         for (Item item : Main.inventory){
@@ -40,6 +48,23 @@ public class Item {
         return responseArray;
     }
 
+    public static ArrayList<Item> getProductsForPackage(ArrayList<Item> inventory, int packageCount){
+        ArrayList<Item> itemList = new ArrayList<Item>();
+        for (Item item : inventory){
+            if (item.getAvailability() + packageCount <= 5 && item.getAvailability() > 0 && packageCount == 0){
+                itemList.add(new Item(item));
+            } else if (item.getAvailability() > 0) {
+                Item temp = new Item(item);
+                int remainingCapacity = 5 - packageCount;
+                temp.setAvailability(Math.min(remainingCapacity, item.getAvailability()));
+                item.setAvailability(Math.min(remainingCapacity, item.getAvailability()));
+                itemList.add(temp);
+            }
+        }
+        inventory = itemList;
+        return itemList;
+    }
+
     public static Item extractProductSelected(String name){
         ArrayList<Item> itemList = new ArrayList<Item>();
         Item itemSelected = null;
@@ -52,8 +77,8 @@ public class Item {
     }
 
 
-    public static void setNewAvailability(String name, int count){
-        for (Item item : Main.inventory){
+    public static void setNewAvailability(ArrayList<Item> inventory,  String name, int count){
+        for (Item item : inventory){
             if (item.getName().equals(name)){
                 item.setAvailability(item.getAvailability()-count);
                 break;

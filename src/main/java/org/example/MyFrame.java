@@ -5,16 +5,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
+import java.util.Map;
 public class MyFrame extends JFrame {
 
     static ArrayList<HashMap<String, String>> cart = new ArrayList<>();
@@ -45,6 +44,9 @@ public class MyFrame extends JFrame {
                 break;
             case "finishPurchase":
                 winFinishPurchase();
+                break;
+            case "packages":
+                winPackages();
                 break;
         }
 
@@ -223,7 +225,7 @@ public class MyFrame extends JFrame {
 
                 cartCount.incrementAndGet();
                 lblCartCount.setText(String.valueOf(cartCount));
-                Item.setNewAvailability((String) cmbProducts.getSelectedItem(), (Integer) spnQuantity.getValue());
+                Item.setNewAvailability(Main.inventory, (String) cmbProducts.getSelectedItem(), (Integer) spnQuantity.getValue());
                 cmbProducts.removeAllItems();
                 for (String productName : Item.getAllAvailableProductNames()) {
                     cmbProducts.addItem(productName);
@@ -363,4 +365,157 @@ public class MyFrame extends JFrame {
         add(lblTitle);
         add(btnAdmin);add(btnClient);add(btnGuest);
     }
+
+    private void winPackages() throws IOException {
+        /*
+         * Este método declara y añade los objetos del menú principal
+         * */
+
+
+        AtomicInteger cartCount = new AtomicInteger(0);
+        ArrayList<Item> inventoryCopy = new ArrayList<Item>(Main.inventory);
+
+        ArrayList<Item> packageItems = Item.getProductsForPackage(inventoryCopy, cartCount.get());
+        String[] packageItemNames = new String[packageItems.size()];
+        int counter = 0;
+        for (Item item : packageItems){
+            packageItemNames[counter] = item.getName();
+            counter++;
+        }
+
+
+
+
+        JLabel lblCartCount = new JLabel(String.valueOf(cartCount));
+        lblCartCount.setBounds(425, 20, 30, 30);
+
+        JLabel lblTitle = new JLabel("Shop");
+        lblTitle.setBounds(170, 20, 200, 50);
+
+        JLabel lblQuantity = new JLabel("Quantity:");
+        lblQuantity.setBounds(60, 130, 200, 50);
+
+        SpinnerNumberModel numberModel = new SpinnerNumberModel(1, 1, packageItems.get(0).getAvailability(), 1);
+        JSpinner spnQuantity = new JSpinner(numberModel);
+        spnQuantity.setBounds(170, 140, 200, 30);
+
+        JLabel lblProduct = new JLabel("Product:");
+        lblProduct.setBounds(60, 90, 200, 50);
+
+        JComboBox<String> cmbProducts;
+        cmbProducts = new JComboBox<>(packageItemNames);
+        cmbProducts.setBounds(170, 100, 200, 30);
+
+        cmbProducts.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedProduct = (String) cmbProducts.getSelectedItem();
+
+                spnQuantity.setValue(1);
+                for (Item item : packageItems){
+                    if (item.getName().equals(selectedProduct)){
+                        numberModel.setMaximum(item.getAvailability());
+                        break;
+                    }
+                }
+            }
+        });
+
+        ArrayList<String> productNamesAdded = new ArrayList<String>();
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+
+        // Step 4: Add the JList to a JScrollPane
+        JScrollPane scrollPane = new JScrollPane(textArea);
+
+        scrollPane.setBounds(450, 80, 200, 110);
+
+
+        JButton btnAdd = new JButton("+");
+        btnAdd.setFont(new Font("Arial", Font.BOLD, 17));
+        btnAdd.setBounds(390, 110, 44, 44);
+
+        HashMap<String, Integer> productsAdded = new HashMap<>();
+        btnAdd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (cartCount.get() == 5){
+                    JOptionPane.showMessageDialog(null,
+                            "Limit of Items is 5, finish package or close window",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int prdCount = (int) spnQuantity.getValue();
+                int currentCount = cartCount.get();
+                String productSelected = (String) cmbProducts.getSelectedItem();
+
+
+                cartCount.set(prdCount + currentCount);
+                lblCartCount.setText(String.valueOf(prdCount + currentCount));
+                Item.setNewAvailability(packageItems, productSelected, prdCount);
+                cmbProducts.removeAllItems();
+                for (Item productName : Item.getProductsForPackage(packageItems, cartCount.get())) {
+                    cmbProducts.addItem(productName.getName());
+                }
+                spnQuantity.setValue(1);
+                StringBuilder list = new StringBuilder();
+                String strTextArea = textArea.getText();
+                if (strTextArea.equals("")){
+                    list.append(productSelected).append(" x").append(prdCount);
+                    productsAdded.put(productSelected, prdCount);
+                } else {
+                    boolean keyFound = false;
+                    for (Map.Entry<String, Integer> entry : productsAdded.entrySet()) {
+                        String key = entry.getKey();
+                        Integer value = entry.getValue();
+                        if (key.equals(productSelected)){
+                            value = value + prdCount;
+                            productsAdded.put(productSelected, value);
+                            keyFound = true;
+                        }
+                        list.append(key).append(" x").append(value).append("\n");
+                    }
+                    if (!keyFound){
+                        list.append(productSelected).append(" x").append(prdCount);
+                        productsAdded.put(productSelected, prdCount);
+                    }
+                }
+                textArea.setText(list.toString());
+                revalidate();
+                repaint();
+
+            }
+        });
+        JButton btnAddProduct = new JButton("Add to Cart");
+        btnAddProduct.setBounds(60, 180, 100, 40);
+
+        JButton btnFinishPurchase = new JButton("Finish");
+        btnFinishPurchase.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (cart.isEmpty()){
+                        JOptionPane.showMessageDialog(null,
+                                "Cart is Empty",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        setVisible(true);
+                    } else{
+                        dispose();
+                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 440, 410, "finishPurchase");
+                    }
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        btnFinishPurchase.setBounds(170, 180, 100, 40);
+
+        add(lblTitle);add(lblProduct);add(lblQuantity);add(lblCartCount);
+        add(cmbProducts);add(spnQuantity);
+        add(btnAddProduct);add(btnFinishPurchase);add(btnAdd);
+        add(scrollPane);
+    }
+
 }

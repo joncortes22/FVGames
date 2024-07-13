@@ -11,7 +11,7 @@ public class Main {
         Item product3 = new Item(3, "Videogame", "FIFA25", 8, 10);
         Item product4 = new Item(4, "Accesory", "PS5 Remote", 4, 10);
         Item product5 = new Item(5, "Console", "PS5", 12, 10);
-        Item product6 = new Item(6, "Subscription", "Play Station Plus", 14, 10);
+        Item product6 = new Item(6, "Subscription", "Play Station Plus", 1, 10);
         inventory.add(product1);
         inventory.add(product2);
         inventory.add(product3);
@@ -19,7 +19,8 @@ public class Main {
         inventory.add(product5);
         inventory.add(product6);
 
-        MyFrame login = new MyFrame("Create User", 480, 310, "buy");
+        /*MyFrame login = new MyFrame("Create User", 480, 310, "buy");*/
+        MyFrame login = new MyFrame("Package", 750, 310, "packages");
         /*MyFrame login = new MyFrame("Create User", 480, 550, "user");*/
         /*MyFrame login = new MyFrame("Login", 500, 280, "login");*/
     }

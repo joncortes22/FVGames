@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 public class Main {
 
+    public static ArrayList<Item> inventory = new ArrayList<Item>();
+    public static ArrayList<Client> clients = new ArrayList<Client>();
+    public static ArrayList<Admin> admins = new ArrayList<Admin>();
     public static Connection conectarDb(String DB){
         Connection conexion;
         String host = "jdbc:mysql://127.0.0.1:3308/";
@@ -39,9 +42,9 @@ public class Main {
         }
     }
 
-    public static ArrayList<Item> inventory = new ArrayList<Item>();
     public static void main(String[] args) throws IOException {
-        Connection DB = conectarDb("fvgames");
+//        Connection DB = conectarDb("fvgames");
+//        desconexion(DB);
         Item product1 = new Item(1, "Videogame", "FIFA23", 3, 10);
         Item product2 = new Item(2, "Videogame", "FIFA24", 6, 10);
         Item product3 = new Item(3, "Videogame", "FIFA25", 8, 10);
@@ -55,10 +58,13 @@ public class Main {
         inventory.add(product5);
         inventory.add(product6);
 
-        /*MyFrame login = new MyFrame("Create User", 480, 310, "buy");*/
-        MyFrame login = new MyFrame("Package", 750, 310, "packages");
-        /*MyFrame login = new MyFrame("Create User", 480, 550, "user");*/
-        /*MyFrame login = new MyFrame("Login", 500, 280, "login");*/
-        desconexion(DB);
+        Admin admin1 = new Admin(123, "123");
+        admins.add(admin1);
+
+        //MyFrame newItem = new MyFrame("New Item", 480, 400, "newItem");
+        //MyFrame buyItem = new MyFrame("Buy Item", 480, 400, "buy");
+        //MyFrame Package = new MyFrame("Package", 750, 310, "packages");
+        //MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+        MyFrame login = new MyFrame("Login", 480, 400, "login");
     }
 }

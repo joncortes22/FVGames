@@ -48,6 +48,18 @@ public class Item {
         return responseArray;
     }
 
+    public static String[] getAllProductNamesByCategory(String category){
+        ArrayList<String> itemList = new ArrayList<String>();
+        for (Item item : Main.inventory){
+            if (item.getAvailability()>0 && item.getCategory().equals(category)){
+                itemList.add(item.getName());
+            }
+        }
+        String[] responseArray = itemList.toArray(new String[0]);
+        Arrays.sort(responseArray);
+        return responseArray;
+    }
+
     public static ArrayList<Item> getProductsForPackage(ArrayList<Item> inventory, int packageCount){
         ArrayList<Item> itemList = new ArrayList<Item>();
         for (Item item : inventory){
@@ -77,6 +89,28 @@ public class Item {
     }
 
 
+    public static String[] getAvailableCategories(){
+        ArrayList<String> categoryList = new ArrayList<String>();
+        for (Item item : Main.inventory){
+            boolean categoryFound = false;
+            for (String category : categoryList){
+                if (item.getCategory().equals(category)){
+                    categoryFound = true;
+                    break;
+                }
+            }
+            if (!categoryFound){
+                categoryList.add(item.getCategory());
+            }
+        }
+        String[] categoryArray = categoryList.toArray(new String[0]);
+        Arrays.sort(categoryArray);
+        String[] copyCategoryArray = new String[categoryArray.length + 1];
+        copyCategoryArray[0] = "All";
+        System.arraycopy(categoryArray, 0, copyCategoryArray, 1, categoryArray.length);
+        return copyCategoryArray;
+    }
+
     public static void setNewAvailability(ArrayList<Item> inventory,  String name, int count){
         for (Item item : inventory){
             if (item.getName().equals(name)){
@@ -85,6 +119,17 @@ public class Item {
             }
         }
 
+    }
+
+    public static boolean validateNameExistance(String name){
+        boolean found = false;
+        for (Item item : Main.inventory){
+            if (item.getName().equalsIgnoreCase(name)){
+                found = true;
+                break;
+            }
+        }
+        return found;
     }
 
     public static int getProductAvailability(String name){
@@ -96,6 +141,10 @@ public class Item {
             }
         }
         return availability;
+    }
+
+    public static int getNewId(){
+        return Main.inventory.get(Main.inventory.size() - 1).getId() + 1;
     }
 
     public int getId() {

@@ -36,6 +36,17 @@ public class Item {
         return itemList.toArray(new Item[0]);
     }
 
+    public static Item getItemSelected(String name){
+        Item returnItem = null;
+        for (Item item : Main.inventory){
+            if (item.getName().equals(name)){
+                returnItem = new Item(item);
+                break;
+            }
+        }
+        return returnItem;
+    }
+
     public static String[] getAllAvailableProductNames(){
         ArrayList<String> itemList = new ArrayList<String>();
         for (Item item : Main.inventory){

@@ -45,12 +45,12 @@ public class Main {
     public static void main(String[] args) throws IOException {
 //        Connection DB = conectarDb("fvgames");
 //        desconexion(DB);
-        Item product1 = new Item(1, "Videogame", "FIFA23", 3, 10);
-        Item product2 = new Item(2, "Videogame", "FIFA24", 6, 10);
-        Item product3 = new Item(3, "Videogame", "FIFA25", 8, 10);
-        Item product4 = new Item(4, "Accesory", "PS5 Remote", 4, 10);
+        Item product1 = new Item(1, "Videogame", "FIFA23", 3, 8);
+        Item product2 = new Item(2, "Videogame", "FIFA24", 6, 15);
+        Item product3 = new Item(3, "Videogame", "FIFA25", 8, 20);
+        Item product4 = new Item(4, "Accesory", "PS5 Remote", 4, 22);
         Item product5 = new Item(5, "Console", "PS5", 12, 10);
-        Item product6 = new Item(6, "Subscription", "Play Station Plus", 1, 10);
+        Item product6 = new Item(6, "Subscription", "Play Station Plus", 1, 5);
         inventory.add(product1);
         inventory.add(product2);
         inventory.add(product3);

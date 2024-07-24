@@ -51,6 +51,9 @@ public class MyFrame extends JFrame {
             case "packages":
                 winPackages();
                 break;
+            case "guest":
+                winGuestView();
+                break;
         }
 
         setVisible(true);
@@ -429,8 +432,32 @@ public class MyFrame extends JFrame {
         JButton btnSignIn = new JButton("Sign In");
         btnSignIn.setBounds(150, 220, 200, 30);
 
+        btnSignIn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
         JButton btnGuest = new JButton("Continue As Guest");
         btnGuest.setBounds(150, 260, 200, 30);
+
+        btnGuest.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame guestView = new MyFrame("Guest View", 480, 400, "guest");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         JButton btnAdmin = new JButton("Login As Admin");
         btnAdmin.setBounds(150, 300, 200, 30);
@@ -707,6 +734,94 @@ public class MyFrame extends JFrame {
         add(txtItemName);add(txtPrice);
         add(spnQuantity);add(cmbCategory);
         add(btnAddProduct);add(btnFinishPurchase);
+    }
+
+    private void winGuestView() throws IOException {
+        /*
+         * Este método declara y añade los objetos del menú principal
+         * */
+
+
+        JLabel lblTitle = new JLabel("Shop");
+        lblTitle.setBounds(170, 20, 200, 50);
+
+        JLabel lblQuantity = new JLabel("Available:");
+        lblQuantity.setBounds(60, 170, 200, 50);
+
+        JLabel lblQuantityCount = new JLabel("");
+        lblQuantityCount.setBounds(170, 180, 200, 30);
+
+        JLabel lblUnitCost = new JLabel("Unit Cost:");
+        lblUnitCost.setBounds(60, 220, 200, 50);
+
+        JLabel lblUnitCostCount = new JLabel("");
+        lblUnitCostCount.setBounds(170, 230, 200, 30);
+
+        JLabel lblProduct = new JLabel("Product:");
+        lblProduct.setBounds(60, 120, 200, 50);
+
+        JComboBox<String> cmbProducts;
+        cmbProducts = new JComboBox<>(Item.getAllAvailableProductNames());
+        cmbProducts.setBounds(170, 130, 200, 30);
+
+        cmbProducts.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedProduct = (String) cmbProducts.getSelectedItem();
+                if (selectedProduct != null){
+                    Item selectedItem = new Item(Item.getItemSelected(selectedProduct));
+                    lblQuantityCount.setText(String.valueOf(selectedItem.getAvailability()));
+                    lblUnitCostCount.setText("$" + String.valueOf(selectedItem.getUnitPrice()));
+                }
+            }
+        });
+
+        JLabel lblFilter = new JLabel("Filter By:");
+        lblFilter.setBounds(60, 80, 200, 30);
+
+        JComboBox<String> cmbFilter;
+        cmbFilter = new JComboBox<>(Item.getAvailableCategories());
+        cmbFilter.setBounds(170, 80, 200, 30);
+
+        cmbFilter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedCategory = (String) cmbFilter.getSelectedItem();
+
+                cmbProducts.removeAllItems();
+                String[] categoryItems;
+                assert selectedCategory != null;
+                if (selectedCategory.equals("All")){
+                    categoryItems = Item.getAllAvailableProductNames();
+                } else {
+                    categoryItems = Item.getAllProductNamesByCategory(selectedCategory);
+                }
+                for (String item : categoryItems){
+                    cmbProducts.addItem(item);
+                }
+            }
+        });
+
+
+
+        JButton btnFinishPurchase = new JButton("Sign Out");
+        btnFinishPurchase.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    dispose();
+                    MyFrame login = new MyFrame("Login", 480, 400, "login");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        btnFinishPurchase.setBounds(170, 280, 100, 40);
+
+        add(lblTitle);add(lblProduct);add(lblQuantity);add(lblFilter);add(lblQuantityCount);
+        add(lblUnitCost);add(lblUnitCostCount);
+        add(cmbProducts);add(cmbFilter);
+        add(btnFinishPurchase);
     }
 
 }

@@ -1,31 +1,14 @@
-package org.example;
+package Controller;
+
+import Model.Item;
+import Program.Main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Item {
-    private int id;
-    private String category;
-    private String name;
-    private int availability;
-    private int unitPrice;
+public class ItemController {
 
-    public Item(int id, String category, String name, int availability, int unitPrice) {
-        this.id = id;
-        this.category = category;
-        this.name = name;
-        this.availability = availability;
-        this.unitPrice = unitPrice;
-    }
-
-    public Item(Item item) {
-        this.id = item.getId();
-        this.category = item.getCategory();
-        this.name = item.getName();
-        this.availability = item.getAvailability();
-        this.unitPrice = item.getUnitPrice();
-    }
-
+    //Logic & Methods
     public Item[] getProductsByCategory(String category){
         ArrayList<Item> itemList = new ArrayList<Item>();
         for (Item item : Main.inventory){
@@ -99,7 +82,6 @@ public class Item {
         return itemSelected;
     }
 
-
     public static String[] getAvailableCategories(){
         ArrayList<String> categoryList = new ArrayList<String>();
         for (Item item : Main.inventory){
@@ -152,37 +134,5 @@ public class Item {
             }
         }
         return availability;
-    }
-
-    public static int getNewId(){
-        return Main.inventory.get(Main.inventory.size() - 1).getId() + 1;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public int getAvailability() {
-        return availability;
-    }
-
-    public int getUnitPrice() {
-        return unitPrice;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setAvailability(int availability) {
-        this.availability = availability;
-    }
-
-    public void setUnitPrice(int unitPrice) {
-        this.unitPrice = unitPrice;
     }
 }

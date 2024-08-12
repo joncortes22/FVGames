@@ -1,4 +1,7 @@
-package org.example;
+package View;
+
+import Model.Item;
+import Program.Main;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

@@ -1,4 +1,4 @@
-package org.example;
+package Model;
 
 public class Client {
     private int id;

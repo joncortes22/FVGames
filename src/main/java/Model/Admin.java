@@ -1,4 +1,6 @@
-package org.example;
+package Model;
+
+import Program.Main;
 
 public class Admin {
     private int id;
@@ -7,17 +9,6 @@ public class Admin {
     public Admin(int id, String password) {
         this.id = id;
         this.password = password;
-    }
-
-    public static boolean login(int id, String password){
-        boolean userFound = false;
-        for (Admin admin : Main.admins){
-            if (admin.getId() == id && admin.getPassword().equals(password)){
-                userFound = true;
-                break;
-            }
-        }
-        return userFound;
     }
 
     public int getId() {

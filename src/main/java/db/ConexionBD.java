@@ -18,7 +18,7 @@ public class ConexionBD {
     ResultSet resultado = null;
     
     //Parámetros de inicialización de BD
-    String url = "jdbc:mysql://127.0.0.1:3308/FVGamesAdmin";
+    String url = "jdbc:mysql://127.0.0.1:3308/fvgames";
     String username = "FVGamesAdmin";
     String password = "Admin123";
 

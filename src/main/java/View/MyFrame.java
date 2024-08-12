@@ -1,6 +1,8 @@
 package View;
 
+import Controller.ItemController;
 import Model.Item;
+import Model.ItemModelDB;
 import Program.Main;
 
 import javax.swing.*;
@@ -183,7 +185,7 @@ public class MyFrame extends JFrame {
         lblProduct.setBounds(60, 120, 200, 50);
 
         JComboBox<String> cmbProducts;
-        cmbProducts = new JComboBox<>(Item.getAllAvailableProductNames());
+        cmbProducts = new JComboBox<>(ItemController.getAllAvailableProductNames());
         cmbProducts.setBounds(170, 130, 200, 30);
 
         cmbProducts.addActionListener(new ActionListener() {
@@ -192,7 +194,7 @@ public class MyFrame extends JFrame {
                 String selectedProduct = (String) cmbProducts.getSelectedItem();
 
                 spnQuantity.setValue(1);
-                numberModel.setMaximum(Item.getProductAvailability(selectedProduct));
+                numberModel.setMaximum(ItemController.getProductAvailability(selectedProduct));
             }
         });
 
@@ -200,7 +202,7 @@ public class MyFrame extends JFrame {
         lblFilter.setBounds(60, 80, 200, 30);
 
         JComboBox<String> cmbFilter;
-        cmbFilter = new JComboBox<>(Item.getAvailableCategories());
+        cmbFilter = new JComboBox<>(ItemController.getAvailableCategories());
         cmbFilter.setBounds(170, 80, 200, 30);
 
         cmbFilter.addActionListener(new ActionListener() {
@@ -212,9 +214,9 @@ public class MyFrame extends JFrame {
                 String[] categoryItems;
                 assert selectedCategory != null;
                 if (selectedCategory.equals("All")){
-                    categoryItems = Item.getAllAvailableProductNames();
+                    categoryItems = ItemController.getAllAvailableProductNames();
                 } else {
-                    categoryItems = Item.getAllProductNamesByCategory(selectedCategory);
+                    categoryItems = ItemController.getAllProductNamesByCategory(selectedCategory);
                 }
                 for (String item : categoryItems){
                     cmbProducts.addItem(item);
@@ -230,8 +232,8 @@ public class MyFrame extends JFrame {
                 HashMap<String, String> itemToCart = new HashMap<String, String>();
 
                 if (cart.size() == 0){
-                    itemToCart.put("name", Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName());
-                    itemToCart.put("unitPrice", String.valueOf(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getUnitPrice()));
+                    itemToCart.put("name", ItemController.extractProductSelected((String) cmbProducts.getSelectedItem()).getName());
+                    itemToCart.put("unitPrice", String.valueOf(ItemController.extractProductSelected((String) cmbProducts.getSelectedItem()).getUnitPrice()));
                     itemToCart.put("unitBought", String.valueOf(spnQuantity.getValue()));
 
                     cart.add(itemToCart);
@@ -239,8 +241,8 @@ public class MyFrame extends JFrame {
                     boolean productFound = false;
                     for (HashMap<String, String> item : cart){
                         String str1 = item.get("name");
-                        String str2 = Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName();
-                        if (item.get("name").equals(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName())){
+                        String str2 = ItemController.extractProductSelected((String) cmbProducts.getSelectedItem()).getName();
+                        if (item.get("name").equals(ItemController.extractProductSelected((String) cmbProducts.getSelectedItem()).getName())){
                             int itemBought = Integer.parseInt(item.get("unitBought"));
                             itemBought = itemBought + Integer.parseInt(String.valueOf(spnQuantity.getValue()));
                             item.put("unitBought", String.valueOf(itemBought));
@@ -249,8 +251,8 @@ public class MyFrame extends JFrame {
                         }
                     }
                     if (!productFound){
-                        itemToCart.put("name", Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getName());
-                        itemToCart.put("unitPrice", String.valueOf(Item.extractProductSelected((String) cmbProducts.getSelectedItem()).getUnitPrice()));
+                        itemToCart.put("name", ItemController.extractProductSelected((String) cmbProducts.getSelectedItem()).getName());
+                        itemToCart.put("unitPrice", String.valueOf(ItemController.extractProductSelected((String) cmbProducts.getSelectedItem()).getUnitPrice()));
                         itemToCart.put("unitBought", String.valueOf(spnQuantity.getValue()));
 
                         cart.add(itemToCart);
@@ -260,9 +262,10 @@ public class MyFrame extends JFrame {
 
                 cartCount.incrementAndGet();
                 lblCartCount.setText(String.valueOf(cartCount));
-                Item.setNewAvailability(Main.inventory, (String) cmbProducts.getSelectedItem(), (Integer) spnQuantity.getValue());
+                //TODO
+                //ItemController.setNewAvailability(Main.inventory, (String) cmbProducts.getSelectedItem(), (Integer) spnQuantity.getValue());
                 cmbProducts.removeAllItems();
-                for (String productName : Item.getAllAvailableProductNames()) {
+                for (String productName : ItemController.getAllAvailableProductNames()) {
                     cmbProducts.addItem(productName);
                 }
                 spnQuantity.setValue(1);
@@ -472,15 +475,18 @@ public class MyFrame extends JFrame {
     }
 
     private void winPackages() throws IOException {
-        /*
-         * Este método declara y añade los objetos del menú principal
+
+         /** Este método declara y añade los objetos del menú principal
          * */
 
 
         AtomicInteger cartCount = new AtomicInteger(0);
-        ArrayList<Item> inventoryCopy = new ArrayList<Item>(Main.inventory);
+        //TODO
+        ItemModelDB imdb = new ItemModelDB();
+        ArrayList<Item> inventory = imdb.getAllStock();
+        ArrayList<Item> inventoryCopy = new ArrayList<Item>(inventory);
 
-        ArrayList<Item> packageItems = Item.getProductsForPackage(inventoryCopy, cartCount.get());
+        ArrayList<Item> packageItems = ItemController.getProductsForPackage(inventoryCopy, cartCount.get());
         String[] packageItemNames = new String[packageItems.size()];
         int counter = 0;
         for (Item item : packageItems){
@@ -558,9 +564,9 @@ public class MyFrame extends JFrame {
 
                 cartCount.set(prdCount + currentCount);
                 lblCartCount.setText(String.valueOf(prdCount + currentCount));
-                Item.setNewAvailability(packageItems, productSelected, prdCount);
+                ItemController.setNewAvailability(packageItems, productSelected, prdCount);
                 cmbProducts.removeAllItems();
-                for (Item productName : Item.getProductsForPackage(packageItems, cartCount.get())) {
+                for (Item productName : ItemController.getProductsForPackage(packageItems, cartCount.get())) {
                     cmbProducts.addItem(productName.getName());
                 }
                 spnQuantity.setValue(1);
@@ -681,8 +687,8 @@ public class MyFrame extends JFrame {
                 int availability = (int) spnQuantity.getValue();
                 String unitPrice = txtPrice.getText();
                 assert category != null;
-                if (category.equals("") || name.equals("") || unitPrice.equals("") || Item.validateNameExistance(name)){
-                    if (Item.validateNameExistance(name)){
+                if (category.equals("") || name.equals("") || unitPrice.equals("") || ItemController.validateNameExistance(name)){
+                    if (ItemController.validateNameExistance(name)){
                         JOptionPane.showMessageDialog(null,
                                 "Product Name Already Exists",
                                 "Error",
@@ -695,8 +701,9 @@ public class MyFrame extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                Item newItem = new Item(Item.getNewId(), category, name, availability, Integer.parseInt(unitPrice));
-                Main.inventory.add(newItem);
+                //TODO
+                /*Item newItem = new Item(ItemController.getNewId(), category, name, availability, Integer.parseInt(unitPrice));
+                Main.inventory.add(newItem);*/
 
                 JOptionPane.showMessageDialog(null, "Item Added Successfully", "Item Added", JOptionPane.INFORMATION_MESSAGE);
                 spnQuantity.setValue(1);
@@ -764,7 +771,7 @@ public class MyFrame extends JFrame {
         lblProduct.setBounds(60, 120, 200, 50);
 
         JComboBox<String> cmbProducts;
-        cmbProducts = new JComboBox<>(Item.getAllAvailableProductNames());
+        cmbProducts = new JComboBox<>(ItemController.getAllAvailableProductNames());
         cmbProducts.setBounds(170, 130, 200, 30);
 
         cmbProducts.addActionListener(new ActionListener() {
@@ -772,7 +779,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String selectedProduct = (String) cmbProducts.getSelectedItem();
                 if (selectedProduct != null){
-                    Item selectedItem = new Item(Item.getItemSelected(selectedProduct));
+                    Item selectedItem = new Item(ItemController.getItemSelected(selectedProduct));
                     lblQuantityCount.setText(String.valueOf(selectedItem.getAvailability()));
                     lblUnitCostCount.setText("$" + String.valueOf(selectedItem.getUnitPrice()));
                 }
@@ -783,7 +790,7 @@ public class MyFrame extends JFrame {
         lblFilter.setBounds(60, 80, 200, 30);
 
         JComboBox<String> cmbFilter;
-        cmbFilter = new JComboBox<>(Item.getAvailableCategories());
+        cmbFilter = new JComboBox<>(ItemController.getAvailableCategories());
         cmbFilter.setBounds(170, 80, 200, 30);
 
         cmbFilter.addActionListener(new ActionListener() {
@@ -795,9 +802,9 @@ public class MyFrame extends JFrame {
                 String[] categoryItems;
                 assert selectedCategory != null;
                 if (selectedCategory.equals("All")){
-                    categoryItems = Item.getAllAvailableProductNames();
+                    categoryItems = ItemController.getAllAvailableProductNames();
                 } else {
-                    categoryItems = Item.getAllProductNamesByCategory(selectedCategory);
+                    categoryItems = ItemController.getAllProductNamesByCategory(selectedCategory);
                 }
                 for (String item : categoryItems){
                     cmbProducts.addItem(item);

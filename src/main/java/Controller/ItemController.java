@@ -1,17 +1,22 @@
 package Controller;
 
+import Model.Admin;
+import Model.AdminModelDB;
 import Model.Item;
+import Model.ItemModelDB;
 import Program.Main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ItemController {
+    private static ItemModelDB imdb = new ItemModelDB();
+    static ArrayList<Item> inventory = imdb.getAllStock();
 
     //Logic & Methods
     public Item[] getProductsByCategory(String category){
         ArrayList<Item> itemList = new ArrayList<Item>();
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getCategory().equals(category)){
                 itemList.add(item);
             }
@@ -21,7 +26,7 @@ public class ItemController {
 
     public static Item getItemSelected(String name){
         Item returnItem = null;
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getName().equals(name)){
                 returnItem = new Item(item);
                 break;
@@ -32,7 +37,7 @@ public class ItemController {
 
     public static String[] getAllAvailableProductNames(){
         ArrayList<String> itemList = new ArrayList<String>();
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getAvailability()>0){
                 itemList.add(item.getName());
             }
@@ -44,7 +49,7 @@ public class ItemController {
 
     public static String[] getAllProductNamesByCategory(String category){
         ArrayList<String> itemList = new ArrayList<String>();
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getAvailability()>0 && item.getCategory().equals(category)){
                 itemList.add(item.getName());
             }
@@ -74,7 +79,7 @@ public class ItemController {
     public static Item extractProductSelected(String name){
         ArrayList<Item> itemList = new ArrayList<Item>();
         Item itemSelected = null;
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getName().equals(name)){
                 itemSelected = item;
             }
@@ -84,7 +89,7 @@ public class ItemController {
 
     public static String[] getAvailableCategories(){
         ArrayList<String> categoryList = new ArrayList<String>();
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             boolean categoryFound = false;
             for (String category : categoryList){
                 if (item.getCategory().equals(category)){
@@ -116,7 +121,7 @@ public class ItemController {
 
     public static boolean validateNameExistance(String name){
         boolean found = false;
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getName().equalsIgnoreCase(name)){
                 found = true;
                 break;
@@ -127,7 +132,7 @@ public class ItemController {
 
     public static int getProductAvailability(String name){
         int availability = 0;
-        for (Item item : Main.inventory){
+        for (Item item : inventory){
             if (item.getName().equals(name)){
                 availability = item.getAvailability();
                 break;

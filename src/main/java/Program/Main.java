@@ -18,9 +18,8 @@ public class Main {
         //por ahora puede descomentar algunas de las ventanas listas que luego serán unidas en un solo sistema
 
         //MyFrame login = new MyFrame("Login", 480, 400, "login");
-        //MyFrame newItem = new MyFrame("New Item", 480, 400, "newItem");
+        MyFrame admin = new MyFrame("Login", 480, 315, "admin");
         //MyFrame buyItem = new MyFrame("Buy Item", 480, 400, "buy");
-        //MyFrame Package = new MyFrame("Package", 750, 310, "packages");
         //MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
     }
 }

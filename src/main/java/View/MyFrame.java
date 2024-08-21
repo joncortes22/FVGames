@@ -59,6 +59,9 @@ public class MyFrame extends JFrame {
             case "guest":
                 winGuestView();
                 break;
+            case "admin":
+                winAdminOptions();
+                break;
         }
 
         setVisible(true);
@@ -678,7 +681,7 @@ public class MyFrame extends JFrame {
             }
         });
 
-        JButton btnAddProduct = new JButton("Add to Cart");
+        JButton btnAddProduct = new JButton("Add");
         btnAddProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -716,34 +719,27 @@ public class MyFrame extends JFrame {
 
             }
         });
-        btnAddProduct.setBounds(60, 280, 100, 40);
 
-        JButton btnFinishPurchase = new JButton("Finish");
-        btnFinishPurchase.addActionListener(new ActionListener() {
+        btnAddProduct.setBounds(170, 280, 90, 40);
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                dispose();
                 try {
-                    if (cart.isEmpty()){
-                        JOptionPane.showMessageDialog(null,
-                                "Cart is Empty",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                        setVisible(true);
-                    } else{
-                        dispose();
-                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 440, 410, "finishPurchase");
-                    }
+                    MyFrame admin = new MyFrame("Login", 480, 315, "admin");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         });
-        btnFinishPurchase.setBounds(170, 280, 100, 40);
+        btnCancel.setBounds(280, 280, 90, 40);
 
         add(lblTitle);add(lblProduct);add(lblQuantity);add(lblFilter);add(lblPrice);
         add(txtItemName);add(txtPrice);
         add(spnQuantity);add(cmbCategory);
-        add(btnAddProduct);add(btnFinishPurchase);
+        add(btnAddProduct);add(btnCancel);
     }
 
     private void winGuestView() throws IOException {
@@ -814,7 +810,7 @@ public class MyFrame extends JFrame {
 
 
 
-        JButton btnFinishPurchase = new JButton("Sign Out");
+        JButton btnFinishPurchase = new JButton("Back");
         btnFinishPurchase.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -832,6 +828,67 @@ public class MyFrame extends JFrame {
         add(lblUnitCost);add(lblUnitCostCount);
         add(cmbProducts);add(cmbFilter);
         add(btnFinishPurchase);
+    }
+
+
+    private void winAdminOptions() {
+        /*
+         * Este método declara y añade los objetos del menú principal
+         * */
+        JLabel lblTitle = new JLabel("Admin Menu");
+        lblTitle.setBounds(195, 20, 200, 50);
+
+        JButton btnAddInventory = new JButton("Add Inventory");
+        btnAddInventory.setBounds(130, 80, 200, 30);
+
+        btnAddInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame newItem = new MyFrame("New Item", 480, 400, "newItem");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton btnEditInventory = new JButton("Edit Inventory");
+        btnEditInventory.setBounds(130, 120, 200, 30);
+
+        btnEditInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton btnPackages = new JButton("Manage Packages");
+        btnPackages.setBounds(130, 160, 200, 30);
+
+        btnPackages.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame Package = new MyFrame("Package", 750, 310, "packages");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton btnReports = new JButton("Reports");
+        btnReports.setBounds(130, 200, 200, 30);
+
+        // Add components to the JFrame
+        add(lblTitle);
+        add(btnAddInventory);add(btnEditInventory);add(btnPackages);add(btnReports);
     }
 
 }

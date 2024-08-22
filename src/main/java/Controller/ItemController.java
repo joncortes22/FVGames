@@ -14,6 +14,13 @@ public class ItemController {
     static ArrayList<Item> inventory = imdb.getAllStock();
 
     //Logic & Methods
+
+    public static void addNewProduct(String category, String name, int availability, int unitPrice){
+        Item newItem = new Item(category, name, availability, unitPrice);
+        inventory.add(newItem);
+        imdb.insertNewProduct(category, name, availability, unitPrice);
+    }
+
     public Item[] getProductsByCategory(String category){
         ArrayList<Item> itemList = new ArrayList<Item>();
         for (Item item : inventory){

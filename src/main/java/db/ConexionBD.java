@@ -63,6 +63,17 @@ public class ConexionBD {
             e.printStackTrace();
         }
     }
+
+    public void performUpdate() {
+        try
+        {
+            consulta.executeUpdate();
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
     
     public void cerrarConexion()
     {

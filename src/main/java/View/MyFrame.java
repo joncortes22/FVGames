@@ -1,5 +1,6 @@
 package View;
 
+import Controller.AdminController;
 import Controller.ItemController;
 import Model.Item;
 import Model.ItemModelDB;
@@ -66,6 +67,7 @@ public class MyFrame extends JFrame {
 
         setVisible(true);
     }
+
     private void winNewClient() {
         /*
          * Este método declara y añade los objetos del menú principal
@@ -148,13 +150,70 @@ public class MyFrame extends JFrame {
         JButton btnCreateUser = new JButton("Create User");
         btnCreateUser.setBounds(60, 430, 130, 40);
 
+        btnCreateUser.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = txtName.getText();
+                String lastName = txtLastName.getText();
+                String id = txtId.getText();
+                String address = txtAddress.getText();
+                String email = txtEmail.getText();
+                String moneyBalance = txtMoneyBalance.getText();
+                String paymentMethod = (String) cmbPaymentMethod.getSelectedItem();
+                assert paymentMethod != null;
+                if (paymentMethod.isEmpty() || name.isEmpty() || lastName.isEmpty() || id.isEmpty() || address.isEmpty() || email.isEmpty() || moneyBalance.isEmpty()){
+                    if (ItemController.validateNameExistance(name)){
+                        JOptionPane.showMessageDialog(null,
+                                "Product Name Already Exists",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    JOptionPane.showMessageDialog(null,
+                            "All Fields are Required",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                //ItemController.addNewProduct(category, name, availability, unitPriceAux);
+
+                JOptionPane.showMessageDialog(null, "Item Added Successfully", "Item Added", JOptionPane.INFORMATION_MESSAGE);
+                txtName.setText("");
+                txtLastName.setText("");
+                txtId.setText("");
+                txtAddress.setText("");
+                txtEmail.setText("");
+                txtMoneyBalance.setText("");
+                cmbPaymentMethod.setSelectedIndex(0);
+                revalidate();
+                repaint();
+
+
+            }
+        });
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.setBounds(200, 430, 130, 40);
+
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    MyFrame login = new MyFrame("Login", 480, 400, "login");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        });
+
         add(lblName);add(lblLastName);add(lblId);add(lblTitle);
         add(lblAddress);add(lblEmail);add(lblMoney);add(lblPaymentMethod);
 
         add(txtName);add(txtLastName);add(txtId);
         add(txtAddress);add(txtEmail);add(txtMoneyBalance);add(cmbPaymentMethod);
 
-        add(btnCreateUser);
+        add(btnCreateUser);add(btnCancel);
     }
 
     private void winBuy() throws IOException {
@@ -470,7 +529,29 @@ public class MyFrame extends JFrame {
 
         JButton btnAdmin = new JButton("Login As Admin");
         btnAdmin.setBounds(150, 300, 200, 30);
+        btnAdmin.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AdminController adminController = new AdminController();
+                char[] password = txtPassword.getPassword();
+                String passwordStr = new String(password);
+                boolean result = adminController.login(Integer.parseInt(txtUser.getText()), passwordStr);
+                if (result){
+                    dispose();
+                    try {
+                        MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                        "Incorrect credentials or user does not exist",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
 
+            }
+        });
         // Add components to the JFrame
         add(lblTitle);add(lblUser);add(lblPassword);
         add(txtUser);add(txtPassword);
@@ -690,7 +771,7 @@ public class MyFrame extends JFrame {
                 int availability = (int) spnQuantity.getValue();
                 String unitPrice = txtPrice.getText();
                 assert category != null;
-                if (category.equals("") || name.equals("") || unitPrice.equals("") || ItemController.validateNameExistance(name)){
+                if (category.isEmpty() || name.isEmpty() || unitPrice.isEmpty() || ItemController.validateNameExistance(name)){
                     if (ItemController.validateNameExistance(name)){
                         JOptionPane.showMessageDialog(null,
                                 "Product Name Already Exists",
@@ -704,9 +785,8 @@ public class MyFrame extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                //TODO
-                /*Item newItem = new Item(ItemController.getNewId(), category, name, availability, Integer.parseInt(unitPrice));
-                Main.inventory.add(newItem);*/
+                int unitPriceAux = Integer.parseInt(unitPrice);
+                ItemController.addNewProduct(category, name, availability, unitPriceAux);
 
                 JOptionPane.showMessageDialog(null, "Item Added Successfully", "Item Added", JOptionPane.INFORMATION_MESSAGE);
                 spnQuantity.setValue(1);
@@ -728,7 +808,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame admin = new MyFrame("Login", 480, 315, "admin");
+                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -830,7 +910,6 @@ public class MyFrame extends JFrame {
         add(btnFinishPurchase);
     }
 
-
     private void winAdminOptions() {
         /*
          * Este método declara y añade los objetos del menú principal
@@ -886,9 +965,24 @@ public class MyFrame extends JFrame {
         JButton btnReports = new JButton("Reports");
         btnReports.setBounds(130, 200, 200, 30);
 
+        JButton btnLogOut = new JButton("Log Out");
+        btnLogOut.setBounds(130, 240, 200, 30);
+
+        btnLogOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    MyFrame login = new MyFrame("Login", 480, 400, "login");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        });
+
         // Add components to the JFrame
         add(lblTitle);
-        add(btnAddInventory);add(btnEditInventory);add(btnPackages);add(btnReports);
+        add(btnAddInventory);add(btnEditInventory);add(btnPackages);add(btnReports);add(btnLogOut);
     }
 
 }

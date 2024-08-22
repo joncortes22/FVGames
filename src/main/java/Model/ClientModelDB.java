@@ -43,8 +43,7 @@ public class ClientModelDB {
         return null;
     }
 
-    public Client getUserByUsername(String username)
-    {
+    public Client getUserByUsername(String username) {
         try
         {
             //Abrimos la conexión
@@ -84,7 +83,7 @@ public class ClientModelDB {
                     "INSERT INTO Customer(id, name, LastName, Address, Email, MoneySum, PreferedPaymentMethod)\n" +
                     "VALUES ("+ username + ",'"+ customerName + "','" + customerLastName + "', '" + address + "','" + email + "' ," + moneySum + ", '" + preferedPaymentMethod +"')");
             //Obtenemos los resultados
-            resultado = conexion.getResultado();
+            conexion.performUpdate();
 
 
             conexion.cerrarConexion();

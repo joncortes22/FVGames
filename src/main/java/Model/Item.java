@@ -6,10 +6,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Item {
+    private int id;
     private String category;
     private String name;
     private int availability;
     private int unitPrice;
+
+    public Item(int id, String category, String name, int availability, int unitPrice) {
+        this.id = id;
+        this.category = category;
+        this.name = name;
+        this.availability = availability;
+        this.unitPrice = unitPrice;
+    }
 
     public Item(String category, String name, int availability, int unitPrice) {
         this.category = category;
@@ -19,6 +28,7 @@ public class Item {
     }
 
     public Item(Item item) {
+        this.id = item.getId();
         this.category = item.getCategory();
         this.name = item.getName();
         this.availability = item.getAvailability();
@@ -26,6 +36,11 @@ public class Item {
     }
 
     //Getters & Setters
+
+
+    public int getId() {
+        return id;
+    }
 
     public String getCategory() {
         return category;
@@ -41,6 +56,10 @@ public class Item {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setAvailability(int availability) {

@@ -31,6 +31,17 @@ public class ItemController {
         return itemList.toArray(new Item[0]);
     }
 
+    public static void editItem(int id, String name, int availability, int unitPrice){
+        for (Item item : inventory){
+            if (item.getId() == id){
+                item.setName(name);
+                item.setAvailability(availability);
+                item.setUnitPrice(unitPrice);
+                imdb.updateProduct(id, name, availability, unitPrice);
+                break;
+            }
+        }
+    }
     public static Item getItemSelected(String name){
         Item returnItem = null;
         for (Item item : inventory){
@@ -41,6 +52,7 @@ public class ItemController {
         }
         return returnItem;
     }
+
 
     public static String[] getAllAvailableProductNames(){
         ArrayList<String> itemList = new ArrayList<String>();

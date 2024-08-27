@@ -20,7 +20,7 @@ public class ItemModelDB {
             resultado = conexion.getResultado();
             ArrayList<Item> im_list = new ArrayList<>();
             while (resultado.next()) {
-                Item item_model = new Item(resultado.getString("category"), resultado.getString("name"), resultado.getInt("availability"), resultado.getInt("unitPrice"));
+                Item item_model = new Item(resultado.getInt("id"), resultado.getString("category"), resultado.getString("name"), resultado.getInt("availability"), resultado.getInt("unitPrice"));
                 im_list.add(item_model);
             }
             conexion.cerrarConexion();
@@ -31,19 +31,17 @@ public class ItemModelDB {
         return null;
     }
 
-    public String modifyProductAvailability(int id, int availability) {
+    public void updateProduct(int id, String name, int availability, int unitPrice) {
         try {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("UPDATE STOCK\n" +
-                    "SET Availability =" + availability + "\n" +
-                    "WHERE ID = " + id);
+            conexion.setConsulta("UPDATE stock\n" +
+                    "SET Name = " + name + ", availability = " + availability + ", UnitPrice = " + unitPrice + " WHERE id = " + id);
             //Obtenemos los resultados
-            resultado = conexion.getResultado();
+            conexion.performUpdate();
 
             conexion.cerrarConexion();
-            return resultado.toString();
 
         } catch (Exception e) {
             throw new RuntimeException(e);

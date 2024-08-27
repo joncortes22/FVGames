@@ -63,6 +63,9 @@ public class MyFrame extends JFrame {
             case "admin":
                 winAdminOptions();
                 break;
+            case "editItem":
+                winEditItem();
+                break;
         }
 
         setVisible(true);
@@ -940,7 +943,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+                    MyFrame editItem = new MyFrame("Edit Item", 480, 400, "editItem");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -983,6 +986,130 @@ public class MyFrame extends JFrame {
         // Add components to the JFrame
         add(lblTitle);
         add(btnAddInventory);add(btnEditInventory);add(btnPackages);add(btnReports);add(btnLogOut);
+    }
+
+    private void winEditItem() throws IOException {
+        /*
+         * Este método declara y añade los objetos del menú principal
+         * */
+
+
+        JLabel lblTitle = new JLabel("Edit Item");
+        lblTitle.setBounds(170, 20, 200, 50);
+
+
+
+        JLabel lblProduct = new JLabel("Name:");
+        lblProduct.setBounds(60, 120, 200, 50);
+
+        JTextField txtItemName = new JTextField();
+        txtItemName.setBounds(170, 130, 200, 30);
+
+
+        JLabel lblFilter = new JLabel("Category:");
+        lblFilter.setBounds(60, 80, 200, 30);
+
+        SpinnerNumberModel numberModel = new SpinnerNumberModel(1, 1, null, 1);
+        JSpinner spnQuantity = new JSpinner(numberModel);
+        spnQuantity.setBounds(170, 180, 200, 30);
+
+        JTextField txtPrice = new JTextField();
+        txtPrice.setBounds(170, 230, 200, 30);
+
+        txtPrice.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            char c = e.getKeyChar();
+            if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                e.consume();  // Ignore the key event
+            }
+            }
+        });
+
+        JComboBox<String> cmbProducts;
+        cmbProducts = new JComboBox<>(ItemController.getAllAvailableProductNames());
+        cmbProducts.setBounds(170, 80, 200, 30);
+        cmbProducts.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedProduct = (String) cmbProducts.getSelectedItem();
+                if (selectedProduct != null){
+                    Item selectedItem = new Item(ItemController.getItemSelected(selectedProduct));
+                    txtItemName.setText(String.valueOf(selectedItem.getName()));
+                    spnQuantity.setValue(selectedItem.getAvailability());
+                    txtPrice.setText(String.valueOf(selectedItem.getUnitPrice()));
+                }
+            }
+        });
+
+        JLabel lblQuantity = new JLabel("Quantity:");
+        lblQuantity.setBounds(60, 170, 200, 50);
+
+        JLabel lblPrice = new JLabel("Unit Price ($):");
+        lblPrice.setBounds(60, 220, 200, 50);
+
+
+
+        JButton btnAddProduct = new JButton("Add");
+        btnAddProduct.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = txtItemName.getText();
+                int availability = (int) spnQuantity.getValue();
+                String unitPrice = txtPrice.getText();
+
+                String selectedProduct = (String) cmbProducts.getSelectedItem();
+                Item selectedItem = new Item(ItemController.getItemSelected(selectedProduct));
+                if (name.isEmpty() || unitPrice.isEmpty()){
+                    if (!selectedItem.getName().equals(name) && ItemController.validateNameExistance(name)){
+                        JOptionPane.showMessageDialog(null,
+                                "Product Name Already Exists",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    JOptionPane.showMessageDialog(null,
+                            "All Fields are Required",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int unitPriceAux = Integer.parseInt(unitPrice);
+                ItemController.editItem(selectedItem.getId(), name, availability, unitPriceAux);
+
+                JOptionPane.showMessageDialog(null, "Item Updated Successfully", "Item Updated", JOptionPane.INFORMATION_MESSAGE);
+                spnQuantity.setValue(1);
+                cmbProducts.setSelectedIndex(0);
+                txtItemName.setText("");
+                txtPrice.setText("");
+                revalidate();
+                repaint();
+
+
+            }
+        });
+
+        btnAddProduct.setBounds(170, 280, 90, 40);
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        btnCancel.setBounds(280, 280, 90, 40);
+
+        add(lblTitle);add(lblProduct);add(lblQuantity);add(lblFilter);add(lblPrice);
+        add(txtItemName);add(txtPrice);
+        add(spnQuantity);add(cmbProducts);
+        add(btnAddProduct);add(btnCancel);
     }
 
 }

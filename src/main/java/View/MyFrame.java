@@ -19,6 +19,8 @@ import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,6 +55,9 @@ public class MyFrame extends JFrame {
                 break;
             case "newItem":
                 winNewItem();
+                break;
+            case "editItem":
+                winEditItem();
                 break;
             case "buy":
                 winBuy();
@@ -441,7 +446,11 @@ public class MyFrame extends JFrame {
                         itemsSb.append(", ").append(item.get("unitBought")).append(" ").append(item.get("name"));
                     }
                 }
-
+                Date currentDate = new Date();
+                String strTotal = lblTotalAndTaxRateValue.getText();
+                strTotal = strTotal.replace("$", "");
+                float flTotal = Float.parseFloat(strTotal);
+                SaleController.newSale(ClientController.getCurrentUser(), String.valueOf(itemsSb), currentDate, flTotal);
                 System.out.println(itemsSb);
 
             }
@@ -983,7 +992,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+                    MyFrame newClient = new MyFrame("Edit Item", 480, 400, "editItem");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -1211,6 +1220,7 @@ public class MyFrame extends JFrame {
         add(spnQuantity);add(cmbProducts);
         add(btnAddProduct);add(btnCancel);
     }
+
     private void winListSales() throws IOException {
         // ... (código de creación del JFrame)
 
@@ -1275,8 +1285,8 @@ public class MyFrame extends JFrame {
 
                 // Agregar los datos de las ventas filtradas al modelo de tabla
                 for (Sale sale : filteredSales) {
-                    //Object[] rowData = {sale.getCustomerId(), sale.getItems(), formatDate(sale.getDate()), sale.getSalesAgent(), sale.getTotal()};
-                    //tableModel.addRow(rowData);
+                    Object[] rowData = {sale.getCustomerId(), sale.getItems(), SaleController.formatDate(sale.getDate()), sale.getTotal()};
+                    tableModel.addRow(rowData);
                 }
 
                 revalidate();
@@ -1295,8 +1305,8 @@ public class MyFrame extends JFrame {
                 // Mostrar todas las ventas en el modelo de tabla
                 tableModel.setRowCount(0);
                 for (Sale sale : sales) {
-                    //Object[] rowData = {sale.getCustomerId(), sale.getItems(), formatDate(sale.getDate()), sale.getSalesAgent(), sale.getTotal()};
-                    //tableModel.addRow(rowData);
+                    Object[] rowData = {sale.getCustomerId(), sale.getItems(), SaleController.formatDate(sale.getDate()), sale.getTotal()};
+                    tableModel.addRow(rowData);
                 }
 
                 revalidate();

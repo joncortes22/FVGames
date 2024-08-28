@@ -6,15 +6,13 @@ public class Sale {
     private int customerId;
     private String items;
     private Date date;
-    private String salesAgent;
-    private int total;
+    private float total;
 
-    public Sale(int customerId, String items, Date date, int total, String salesAgent) {
+    public Sale(int customerId, String items, Date date, float total) {
         this.customerId = customerId;
         this.items = items;
         this.date = date;
         this.total = total;
-        this.salesAgent = salesAgent;
     }
 
     public int getCustomerId() {
@@ -41,15 +39,8 @@ public class Sale {
         this.items = items;
     }
 
-    public String getSalesAgent() {
-        return salesAgent;
-    }
 
-    public void setSalesAgent(String salesAgent) {
-        this.salesAgent = salesAgent;
-    }
-
-    public int getTotal() {
+    public float getTotal() {
         return total;
     }
 
@@ -59,6 +50,6 @@ public class Sale {
 
     public String toString() {
         // Formato de fecha: yyyy-MM-dd
-        return customerId + ", " + items + ", " + date.toString() + ", " + salesAgent + ", $" + total;
+        return customerId + ", " + items + ", " + date.toString() + ", $" + total;
     }
 }

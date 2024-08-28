@@ -43,4 +43,8 @@ public class Client {
     public void setSessionOpen(boolean sessionOpen) {
         this.sessionOpen = sessionOpen;
     }
+
+    public boolean isSessionOpen() {
+        return sessionOpen;
+    }
 }

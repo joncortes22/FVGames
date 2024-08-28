@@ -18,7 +18,7 @@ public class SaleModelDB {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("SELECT CustomerID,  Items, Date, SalesAgent, Total, C.Name as CustomerName, C.LastName as CustomerLastName, C.email, C.preferedPaymentMethod\n" +
+            conexion.setConsulta("SELECT CustomerID,  Items, Date, Total, C.Name as CustomerName, C.LastName as CustomerLastName, C.email, C.preferedPaymentMethod\n" +
                     "FROM Sales S\n" +
                     "INNER Join Customer C ON S.CustomerID = C.id");
             //Obtenemos los resultados
@@ -26,7 +26,7 @@ public class SaleModelDB {
             ArrayList<Sale> sm_list = new ArrayList<Sale>();
             while(resultado.next())
             {
-                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"),resultado.getString("SalesAgent"));
+                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"));
                 sm_list.add(sale_model);
             }
             conexion.cerrarConexion();
@@ -39,19 +39,18 @@ public class SaleModelDB {
         return null;
     }
 
-    public String RegisterSale(int customerId, String concatedItems, Date date, String salesAgent, int total){
+    public void registerSale(int customerId, String concatedItems, Date date, float total){
         try
         {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("INSERT INTO SALES(CustomerId, Items, Date, SalesAgent, Total)\n" +
-                    "VALUES ("+customerId+", '"+ concatedItems+"', '"+ date +"', '"+salesAgent+"', '"+ total +"');");
+            conexion.setConsulta("INSERT INTO SALES(CustomerId, Items, Date, Total)\n" +
+                    "VALUES ("+customerId+", '"+ concatedItems+"', '"+ date +"', '"+ total +"');");
             //Obtenemos los resultados
-            resultado = conexion.getResultado();
+            conexion.performUpdate();
 
             conexion.cerrarConexion();
-            return resultado.toString();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -74,7 +73,7 @@ public class SaleModelDB {
             ArrayList<Sale> sm_list = new ArrayList<Sale>();
             while(resultado.next())
             {
-                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"),resultado.getString("SalesAgent"));
+                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"));
                 sm_list.add(sale_model);
             }
             conexion.cerrarConexion();
@@ -103,7 +102,7 @@ public class SaleModelDB {
             ArrayList<Sale> sm_list = new ArrayList<Sale>();
             while(resultado.next())
             {
-                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"),resultado.getString("SalesAgent"));
+                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"));
                 sm_list.add(sale_model);
             }
             conexion.cerrarConexion();

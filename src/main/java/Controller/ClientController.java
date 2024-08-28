@@ -21,6 +21,16 @@ public class ClientController {
         return userFound;
     }
 
+    public static int getCurrentUser(){
+        int id = 0;
+        for (Client client : clients){
+            if (client.isSessionOpen()){
+                id =  client.getId();
+            }
+        }
+        return id;
+    }
+
     public static void addNewProduct(int id, String name, String lastName, String address, String email, int moneySum, String paymentMethod, String password){
         Client newClient = new Client(id, name, lastName, address, email, moneySum, paymentMethod, password);
         clients.add(newClient);

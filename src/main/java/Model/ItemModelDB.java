@@ -37,7 +37,7 @@ public class ItemModelDB {
             conexion.setConexion();
             //Definimos la consulta
             conexion.setConsulta("UPDATE stock\n" +
-                    "SET Name = " + name + ", availability = " + availability + ", UnitPrice = " + unitPrice + " WHERE id = " + id);
+                    "SET Name = '" + name + "', availability = " + availability + ", UnitPrice = " + unitPrice + " WHERE id = " + id);
             //Obtenemos los resultados
             conexion.performUpdate();
 

@@ -27,14 +27,14 @@ public class ClientModelDB {
                     "WHERE U.roleid = 2");
             //Obtenemos los resultados
             resultado = conexion.getResultado();
-            ArrayList<Client> cm_list = new ArrayList<Client>();
+            ArrayList<Client> am_list = new ArrayList<Client>();
             while(resultado.next())
             {
-                Client client_model = new Client(resultado.getInt("UserId"), resultado.getString("CustomerName"), resultado.getString("CustomerLastName"), resultado.getString("Address"), resultado.getString("email"),resultado.getInt("MoneySum"), resultado.getString("PreferedPaymentMethod"));
-                cm_list.add(client_model);
+                Client client_model = new Client(resultado.getInt("username"), resultado.getString("password"), false);
+                am_list.add(client_model);
             }
             conexion.cerrarConexion();
-            return cm_list;
+            return am_list;
         }
         catch(SQLException e)
         {
@@ -59,7 +59,7 @@ public class ClientModelDB {
 
             while(resultado.next())
             {
-                Client client_model = new Client(resultado.getInt("UserId"), resultado.getString("CustomerName"), resultado.getString("CustomerLastName"), resultado.getString("Address"), resultado.getString("email"),resultado.getInt("MoneySum"), resultado.getString("PreferedPaymentMethod"));
+                Client client_model = new Client(resultado.getInt("UserId"), resultado.getString("CustomerName"), resultado.getString("CustomerLastName"), resultado.getString("Address"), resultado.getString("email"),resultado.getInt("MoneySum"), resultado.getString("PreferedPaymentMethod"), resultado.getString("password"));
                 return client_model;
             }
 

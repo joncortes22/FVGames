@@ -8,8 +8,10 @@ public class Client {
     private String email;
     private int MoneySum;
     private String paymentMethod;
+    private String password;
+    private boolean sessionOpen = false;
 
-    public Client(int id, String name, String lastName, String address, String email, int moneySum, String paymentMethod) {
+    public Client(int id, String name, String lastName, String address, String email, int moneySum, String paymentMethod, String password) {
         this.id = id;
         this.name = name;
         this.lastName = lastName;
@@ -17,6 +19,13 @@ public class Client {
         this.email = email;
         MoneySum = moneySum;
         this.paymentMethod = paymentMethod;
+        this.password = password;
+    }
+
+    public Client(int id, String password, boolean sessionOpen) {
+        this.id = id;
+        this.password = password;
+        this.sessionOpen = sessionOpen;
     }
 
     public int getId() {
@@ -27,51 +36,11 @@ public class Client {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getPassword() {
+        return password;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getMoneySum() {
-        return MoneySum;
-    }
-
-    public void setMoneySum(int moneySum) {
-        MoneySum = moneySum;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setSessionOpen(boolean sessionOpen) {
+        this.sessionOpen = sessionOpen;
     }
 }

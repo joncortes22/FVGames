@@ -1,6 +1,7 @@
 package View;
 
 import Controller.AdminController;
+import Controller.ClientController;
 import Controller.ItemController;
 import Model.Item;
 import Model.ItemModelDB;
@@ -13,6 +14,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,6 +58,9 @@ public class MyFrame extends JFrame {
                 break;
             case "packages":
                 winPackages();
+                break;
+            case "client":
+                winClientOptions();
                 break;
             case "guest":
                 winGuestView();
@@ -201,6 +206,7 @@ public class MyFrame extends JFrame {
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                dispose();
                 try {
                     MyFrame login = new MyFrame("Login", 480, 400, "login");
                 } catch (IOException ex) {
@@ -289,7 +295,7 @@ public class MyFrame extends JFrame {
             }
         });
 
-        JButton btnAddProduct = new JButton("Add to Cart");
+        JButton btnAddProduct = new JButton("Add");
         btnAddProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -339,7 +345,7 @@ public class MyFrame extends JFrame {
 
             }
         });
-        btnAddProduct.setBounds(60, 230, 100, 40);
+        btnAddProduct.setBounds(170, 230, 90, 40);
 
         JButton btnFinishPurchase = new JButton("Finish");
         btnFinishPurchase.addActionListener(new ActionListener() {
@@ -361,7 +367,7 @@ public class MyFrame extends JFrame {
                 }
             }
         });
-        btnFinishPurchase.setBounds(170, 230, 100, 40);
+        btnFinishPurchase.setBounds(280, 230, 90, 40);
 
         add(lblCartImage);
         add(lblTitle);add(lblProduct);add(lblQuantity);add(lblCartCount);add(lblFilter);
@@ -421,8 +427,18 @@ public class MyFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                revalidate();
-                repaint();
+                StringBuilder itemsSb = new StringBuilder();
+                int cartCounter = 0;
+                for (HashMap<String, String> item : cart){
+                    if (cartCounter == 0){
+                        itemsSb.append(item.get("unitBought")).append(" ").append(item.get("name"));
+                        cartCounter += 1;
+                    } else {
+                        itemsSb.append(", ").append(item.get("unitBought")).append(" ").append(item.get("name"));
+                    }
+                }
+
+                System.out.println(itemsSb);
 
             }
         });
@@ -435,7 +451,6 @@ public class MyFrame extends JFrame {
 
                 revalidate();
                 repaint();
-
             }
         });
         btnCancel.setBounds(180, 295, 100, 40);
@@ -483,20 +498,33 @@ public class MyFrame extends JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if (cart.isEmpty()){
+                ClientController clientController = new ClientController();
+                String user = txtUser.getText();
+                char[] password = txtPassword.getPassword();
+                String passwordStr = new String(password);
+                if (user.isEmpty() || passwordStr.isEmpty()){
+                    JOptionPane.showMessageDialog(null,
+                            "All fields are mandatory",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    boolean result = clientController.login(Integer.parseInt(user), passwordStr);
+                    //boolean result = true;
+                    if (result){
+                        dispose();
+                        try {
+                            MyFrame admin = new MyFrame("Client Menu", 480, 320, "client");
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
                         JOptionPane.showMessageDialog(null,
-                                "Cart is Empty",
+                                "Incorrect credentials or user does not exist",
                                 "Error",
                                 JOptionPane.ERROR_MESSAGE);
-                        setVisible(true);
-                    } else{
-                        dispose();
-                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 440, 410, "finishPurchase");
                     }
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
                 }
+
             }
         });
 
@@ -523,7 +551,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame guestView = new MyFrame("Guest View", 480, 400, "guest");
+                    MyFrame guestView = new MyFrame("Inventory", 480, 400, "guest");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -536,21 +564,29 @@ public class MyFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AdminController adminController = new AdminController();
+                String user = txtUser.getText();
                 char[] password = txtPassword.getPassword();
                 String passwordStr = new String(password);
-                boolean result = adminController.login(Integer.parseInt(txtUser.getText()), passwordStr);
-                if (result){
-                    dispose();
-                    try {
-                        MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                } else {
+                if (user.isEmpty() || passwordStr.isEmpty()){
                     JOptionPane.showMessageDialog(null,
-                        "Incorrect credentials or user does not exist",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                            "All fields are mandatory",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } else {
+                    boolean result = adminController.login(Integer.parseInt(user), passwordStr);
+                    if (result){
+                        dispose();
+                        try {
+                            MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null,
+                                "Incorrect credentials or user does not exist",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
             }
@@ -974,6 +1010,7 @@ public class MyFrame extends JFrame {
         btnLogOut.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                dispose();
                 try {
                     MyFrame login = new MyFrame("Login", 480, 400, "login");
                 } catch (IOException ex) {
@@ -986,6 +1023,79 @@ public class MyFrame extends JFrame {
         // Add components to the JFrame
         add(lblTitle);
         add(btnAddInventory);add(btnEditInventory);add(btnPackages);add(btnReports);add(btnLogOut);
+    }
+
+    private void winClientOptions() {
+        /*
+         * Este método declara y añade los objetos del menú principal
+         * */
+        JLabel lblTitle = new JLabel("Client Menu");
+        lblTitle.setBounds(195, 20, 200, 50);
+
+        JButton btnAddInventory = new JButton("Inventory");
+        btnAddInventory.setBounds(130, 80, 200, 30);
+
+        btnAddInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame guestView = new MyFrame("Inventory", 480, 400, "guest");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton btnEditInventory = new JButton("Buy");
+        btnEditInventory.setBounds(130, 120, 200, 30);
+
+        btnEditInventory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame buyItem = new MyFrame("Buy Item", 480, 360, "buy");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton btnPackages = new JButton("Buy Packages");
+        btnPackages.setBounds(130, 160, 200, 30);
+
+        btnPackages.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame Package = new MyFrame("Package", 750, 310, "packages");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        JButton btnLogOut = new JButton("Log Out");
+        btnLogOut.setBounds(130, 200, 200, 30);
+
+        btnLogOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame login = new MyFrame("Login", 480, 400, "login");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        });
+
+        // Add components to the JFrame
+        add(lblTitle);
+        add(btnAddInventory);add(btnEditInventory);add(btnPackages);add(btnLogOut);
     }
 
     private void winEditItem() throws IOException {

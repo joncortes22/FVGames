@@ -1,22 +1,29 @@
 package Program;
 
-import Model.Admin;
-import Model.Client;
-import Model.Item;
-import View.MyFrame;
+import Concurrency.Client;
+import Concurrency.Server;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class Main {
+    public static void main(String[] args) {
+        new Thread(() -> {
+            int port = 6060;
+            Server server = new Server(port);
+            server.start();
+        }).start();
 
-    public static void main(String[] args) throws IOException {
-        MyFrame login = new MyFrame("Login", 480, 400, "login");
-        //MyFrame admin = new MyFrame("Login", 480, 315, "admin");
-        //MyFrame buyItem = new MyFrame("Buy Item", 480, 400, "buy");
-        //MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+        int numberOfClients = 1;
+        for (int i = 0; i < numberOfClients; i++) {
+            final int clientId = i;
+            new Thread(() -> {
+                Client client = new Client("127.0.0.1", 6060);
+                try {
+                    client.start();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }, "Client-Thread-" + clientId).start();
+        }
     }
 }

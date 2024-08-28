@@ -21,6 +21,16 @@ public class ClientController {
         return userFound;
     }
 
+    public static boolean validateExistance(int id){
+        boolean found = false;
+        for (Client client : clients){
+            if (client.getId() == id){
+                found = true;
+            }
+        }
+        return found;
+    }
+
     public static int getCurrentUser(){
         int id = 0;
         for (Client client : clients){
@@ -31,9 +41,9 @@ public class ClientController {
         return id;
     }
 
-    public static void addNewProduct(int id, String name, String lastName, String address, String email, int moneySum, String paymentMethod, String password){
+    public static void addNewClient(int id, String name, String lastName, String address, String email, int moneySum, String paymentMethod, String password){
         Client newClient = new Client(id, name, lastName, address, email, moneySum, paymentMethod, password);
         clients.add(newClient);
-        //cmdb.insertNewProduct(category, name, availability, unitPrice);
+        cmdb.insertNewCustomer(String.valueOf(id), password, name, lastName, address, email, moneySum, paymentMethod);
     }
 }

@@ -39,7 +39,7 @@ public class SaleModelDB {
         return null;
     }
 
-    public void registerSale(int customerId, String concatedItems, Date date, float total){
+    public void registerSale(int customerId, String concatedItems, String date, float total){
         try
         {
             //Abrimos la conexión

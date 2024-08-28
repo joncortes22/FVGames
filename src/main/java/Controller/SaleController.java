@@ -17,7 +17,9 @@ public class SaleController {
     public static void newSale(int customerId, String items, Date date, float total){
         Sale newSale = new Sale(customerId, items, date, total);
         sales.add(newSale);
-        smdb.registerSale(customerId, items, date, total);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = formatter.format(date);
+        smdb.registerSale(customerId, items, formattedDate, total);
     }
     public static ArrayList<Sale> filterSales(ArrayList<Sale> sales, String customerId, String fromDateString, String toDateString) {
         ArrayList<Sale> filteredSales = new ArrayList<>();

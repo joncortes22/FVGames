@@ -1,9 +1,6 @@
 package View;
 
-import Controller.AdminController;
-import Controller.ClientController;
-import Controller.ItemController;
-import Controller.SaleController;
+import Controller.*;
 import Model.Item;
 import Model.ItemModelDB;
 import Model.Sale;
@@ -164,8 +161,14 @@ public class MyFrame extends JFrame {
             }
         });
 
+        JLabel lblPassword = new JLabel("Password:");
+        lblPassword.setBounds(60, 420, 200, 50);
+
+        JPasswordField txtPassword = new JPasswordField();
+        txtPassword.setBounds(190, 430, 200, 30);
+
         JButton btnCreateUser = new JButton("Create User");
-        btnCreateUser.setBounds(60, 430, 130, 40);
+        btnCreateUser.setBounds(60, 480, 130, 40);
 
         btnCreateUser.addActionListener(new ActionListener() {
             @Override
@@ -179,7 +182,7 @@ public class MyFrame extends JFrame {
                 String paymentMethod = (String) cmbPaymentMethod.getSelectedItem();
                 assert paymentMethod != null;
                 if (paymentMethod.isEmpty() || name.isEmpty() || lastName.isEmpty() || id.isEmpty() || address.isEmpty() || email.isEmpty() || moneyBalance.isEmpty()){
-                    if (ItemController.validateNameExistance(name)){
+                    if (ClientController.validateExistance(Integer.parseInt(id))){
                         JOptionPane.showMessageDialog(null,
                                 "Product Name Already Exists",
                                 "Error",
@@ -192,7 +195,9 @@ public class MyFrame extends JFrame {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                //ItemController.addNewProduct(category, name, availability, unitPriceAux);
+                char[] password = txtPassword.getPassword();
+                String passwordStr = new String(password);
+                ClientController.addNewClient(Integer.parseInt(id), name, lastName, address, email, Integer.parseInt(moneyBalance), paymentMethod, passwordStr);
 
                 JOptionPane.showMessageDialog(null, "Item Added Successfully", "Item Added", JOptionPane.INFORMATION_MESSAGE);
                 txtName.setText("");
@@ -210,7 +215,7 @@ public class MyFrame extends JFrame {
         });
 
         JButton btnCancel = new JButton("Cancel");
-        btnCancel.setBounds(200, 430, 130, 40);
+        btnCancel.setBounds(200, 480, 130, 40);
 
         btnCancel.addActionListener(new ActionListener() {
             @Override
@@ -225,10 +230,10 @@ public class MyFrame extends JFrame {
             }
         });
 
-        add(lblName);add(lblLastName);add(lblId);add(lblTitle);
+        add(lblName);add(lblLastName);add(lblId);add(lblTitle);add(lblPassword);
         add(lblAddress);add(lblEmail);add(lblMoney);add(lblPaymentMethod);
 
-        add(txtName);add(txtLastName);add(txtId);
+        add(txtName);add(txtLastName);add(txtId);add(txtPassword);
         add(txtAddress);add(txtEmail);add(txtMoneyBalance);add(cmbPaymentMethod);
 
         add(btnCreateUser);add(btnCancel);
@@ -378,10 +383,24 @@ public class MyFrame extends JFrame {
         });
         btnFinishPurchase.setBounds(280, 230, 90, 40);
 
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame admin = new MyFrame("Client Menu", 480, 320, "client");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        btnCancel.setBounds(60, 230, 90, 40);
+
         add(lblCartImage);
         add(lblTitle);add(lblProduct);add(lblQuantity);add(lblCartCount);add(lblFilter);
         add(cmbProducts);add(spnQuantity);add(cmbFilter);
-        add(btnAddProduct);add(btnFinishPurchase);
+        add(btnAddProduct);add(btnFinishPurchase);add(btnCancel);
     }
 
     private void winFinishPurchase() throws IOException {
@@ -450,6 +469,7 @@ public class MyFrame extends JFrame {
                 String strTotal = lblTotalAndTaxRateValue.getText();
                 strTotal = strTotal.replace("$", "");
                 float flTotal = Float.parseFloat(strTotal);
+
                 SaleController.newSale(ClientController.getCurrentUser(), String.valueOf(itemsSb), currentDate, flTotal);
                 System.out.println(itemsSb);
 
@@ -549,7 +569,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
+                    MyFrame newClient = new MyFrame("Create User", 480, 600, "newClient");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -617,7 +637,6 @@ public class MyFrame extends JFrame {
 
 
         AtomicInteger cartCount = new AtomicInteger(0);
-        //TODO
         ItemModelDB imdb = new ItemModelDB();
         ArrayList<Item> inventory = imdb.getAllStock();
         ArrayList<Item> inventoryCopy = new ArrayList<Item>(inventory);
@@ -631,16 +650,35 @@ public class MyFrame extends JFrame {
         }
 
 
-
+        JLabel lblCount = new JLabel("Count:");
+        lblCount.setBounds(450, 50, 50, 30);
 
         JLabel lblCartCount = new JLabel(String.valueOf(cartCount));
-        lblCartCount.setBounds(425, 20, 30, 30);
+        lblCartCount.setBounds(500, 50, 30, 30);
 
-        JLabel lblTitle = new JLabel("Shop");
-        lblTitle.setBounds(170, 20, 200, 50);
+        JLabel lblTitle = new JLabel("Packages");
+        lblTitle.setBounds(170, 50, 200, 50);
 
         JLabel lblQuantity = new JLabel("Quantity:");
         lblQuantity.setBounds(60, 130, 200, 50);
+
+        JLabel lblDiscount = new JLabel("Discount:");
+        lblDiscount.setBounds(60, 170, 200, 50);
+
+        JTextField txtDiscount = new JTextField();
+        txtDiscount.setBounds(170, 180, 200, 30);
+
+        txtDiscount.setText("15");
+
+        txtDiscount.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            char c = e.getKeyChar();
+            if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                e.consume();
+            }
+            }
+        });
 
         SpinnerNumberModel numberModel = new SpinnerNumberModel(1, 1, packageItems.get(0).getAvailability(), 1);
         JSpinner spnQuantity = new JSpinner(numberModel);
@@ -675,12 +713,12 @@ public class MyFrame extends JFrame {
         // Step 4: Add the JList to a JScrollPane
         JScrollPane scrollPane = new JScrollPane(textArea);
 
-        scrollPane.setBounds(450, 80, 200, 110);
+        scrollPane.setBounds(450, 90, 200, 130);
 
 
         JButton btnAdd = new JButton("+");
         btnAdd.setFont(new Font("Arial", Font.BOLD, 17));
-        btnAdd.setBounds(390, 110, 44, 44);
+        btnAdd.setBounds(390, 130, 44, 44);
 
         HashMap<String, Integer> productsAdded = new HashMap<>();
         btnAdd.addActionListener(new ActionListener() {
@@ -735,33 +773,63 @@ public class MyFrame extends JFrame {
             }
         });
         JButton btnAddProduct = new JButton("Add to Cart");
-        btnAddProduct.setBounds(60, 180, 100, 40);
+        btnAddProduct.setBounds(170, 230, 100, 40);
 
         JButton btnFinishPurchase = new JButton("Finish");
         btnFinishPurchase.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    if (cart.isEmpty()){
-                        JOptionPane.showMessageDialog(null,
-                                "Cart is Empty",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                        setVisible(true);
-                    } else{
-                        dispose();
-                        MyFrame finishPurchase = new MyFrame("Finish Purchase", 440, 410, "finishPurchase");
+                if (productsAdded.size() == 0){
+                    JOptionPane.showMessageDialog(null,
+                        "Product Name Already Exists",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                } else if (txtDiscount.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null,
+                        "Enter a Discount Percentage",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                } else {
+                    int countStr = 0;
+                    StringBuilder sb = new StringBuilder();
+                    for (String key : productsAdded.keySet()) {
+                        Integer value = productsAdded.get(key);
+                        System.out.println("Key: " + key + ", Value: " + value);
+                        if (countStr == 0){
+                            sb.append(value).append(" ").append(key);
+                            countStr += 1;
+                        } else {
+                            sb.append(", ").append(value).append(" ").append(key);
+                        }
                     }
+                    PackageController.addNewPackage(String.valueOf(sb), Integer.parseInt(txtDiscount.getText()));
+                    JOptionPane.showMessageDialog(null, "Item Added Successfully", "Item Added", JOptionPane.INFORMATION_MESSAGE);
+                    cartCount.set(0);
+                    txtDiscount.setText("15");
+                    cmbProducts.setSelectedIndex(0);
+                    textArea.setText("");
+                }
+            }
+        });
+        btnFinishPurchase.setBounds(280, 230, 100, 40);
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         });
-        btnFinishPurchase.setBounds(170, 180, 100, 40);
+        btnCancel.setBounds(390, 230, 100, 40);
 
-        add(lblTitle);add(lblProduct);add(lblQuantity);add(lblCartCount);
-        add(cmbProducts);add(spnQuantity);
-        add(btnAddProduct);add(btnFinishPurchase);add(btnAdd);
+        add(lblTitle);add(lblProduct);add(lblQuantity);add(lblCartCount);add(lblCount);add(lblDiscount);
+        add(cmbProducts);add(spnQuantity);add(txtDiscount);
+        add(btnAddProduct);add(btnFinishPurchase);add(btnAdd);add(btnCancel);
         add(scrollPane);
     }
 
@@ -1007,7 +1075,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame Package = new MyFrame("Package", 750, 310, "packages");
+                    MyFrame Package = new MyFrame("Package", 750, 370, "packages");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -1167,7 +1235,7 @@ public class MyFrame extends JFrame {
         lblQuantity.setBounds(60, 170, 200, 50);
         JLabel lblPrice = new JLabel("Unit Price ($):");
         lblPrice.setBounds(60, 220, 200, 50);
-        JButton btnAddProduct = new JButton("Add");
+        JButton btnAddProduct = new JButton("Update");
         btnAddProduct.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

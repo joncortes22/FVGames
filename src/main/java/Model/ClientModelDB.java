@@ -71,14 +71,14 @@ public class ClientModelDB {
         return null;
     }
 
-    public String InsertNewCustomer(String username, String password, String customerName, String customerLastName, String address, String email, int moneySum, String preferedPaymentMethod){
+    public String insertNewCustomer(String username, String password, String customerName, String customerLastName, String address, String email, int moneySum, String preferedPaymentMethod){
         try
         {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("INSERT INTO User(Username, Password, RoleId)\n" +
-                    "VALUES (" + username +", " + password + ", 2);" +
+            conexion.setConsulta("INSERT INTO [User](Username, Password, RoleId)\n" +
+                    "VALUES (" + username +", '" + password + "', 2);" +
                     "INSERT INTO Customer(id, name, LastName, Address, Email, MoneySum, PreferedPaymentMethod)\n" +
                     "VALUES ("+ username + ",'"+ customerName + "','" + customerLastName + "', '" + address + "','" + email + "' ," + moneySum + ", '" + preferedPaymentMethod +"')");
             //Obtenemos los resultados

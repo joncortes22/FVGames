@@ -3,6 +3,7 @@ package View;
 import Controller.*;
 import Model.Item;
 import Model.ItemModelDB;
+import Model.Package;
 import Model.Sale;
 import Program.Main;
 
@@ -58,6 +59,9 @@ public class MyFrame extends JFrame {
                 break;
             case "buy":
                 winBuy();
+                break;
+            case "buyPackage":
+                winBuyPackage();
                 break;
             case "login":
                 winLoginOptions();
@@ -474,7 +478,7 @@ public class MyFrame extends JFrame {
                 float flTotal = Float.parseFloat(strTotal);
 
                 SaleController.newSale(ClientController.getCurrentUser(), String.valueOf(itemsSb), currentDate, flTotal);
-                System.out.println(itemsSb);
+                cart.clear();
 
             }
         });
@@ -497,6 +501,146 @@ public class MyFrame extends JFrame {
         add(lblTotal);add(lblTaxRate);add(lblTotalAndTaxRate);
         add(lblTotalValue);add(lblTaxRateValue);add(lblTotalAndTaxRateValue);
         add(btnBuy);add(btnCancel);
+    }
+
+    private void winBuyPackage() throws IOException {
+        /** Este método declara y añade los objetos del menú principal
+         * */
+
+
+        JLabel lblTitle = new JLabel("Package ID:");
+        lblTitle.setBounds(60, 15, 200, 50);
+
+        JTextField txtId = new JTextField();
+        txtId.setBounds(140, 25, 200, 30);
+
+        txtId.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();  // Ignore the key event
+                }
+            }
+        });
+
+        String[] listData = new String[cart.size()];
+        int counter = 0, purchaseTotal = 0;
+        for (HashMap<String, String> item : cart){
+            int itemTotal = Integer.parseInt(item.get("unitPrice")) * Integer.parseInt(item.get("unitBought"));
+            purchaseTotal = purchaseTotal + itemTotal;
+            listData[counter] = item.get("name") + " x" + item.get("unitBought") + " = $" + String.valueOf(itemTotal);
+            counter++;
+        }
+
+        // Step 3: Create the JList with the data
+        JList<String> cartList = new JList<>(listData);
+
+        // Step 4: Add the JList to a JScrollPane
+        JScrollPane scrollPane = new JScrollPane(cartList);
+
+        scrollPane.setBounds(60, 70, 300, 120);
+
+
+        JLabel lblTotal = new JLabel("Total:");
+        lblTotal.setBounds(60, 185, 200, 50);
+
+        JLabel lblTaxRate = new JLabel("Tax Rate:");
+        lblTaxRate.setBounds(60, 215, 200, 50);
+
+        JLabel lblTotalAndTaxRate = new JLabel("Total + tax:");
+        lblTotalAndTaxRate.setBounds(60, 245, 200, 50);
+
+        JLabel lblTotalValue = new JLabel("$" + String.valueOf(purchaseTotal));
+        lblTotalValue.setBounds(310, 185, 200, 50);
+
+        JLabel lblTaxRateValue = new JLabel("13%");
+        lblTaxRateValue.setBounds(310, 215, 200, 50);
+
+        String totalPlusTax = String.valueOf((purchaseTotal*0.13)+purchaseTotal);
+        JLabel lblTotalAndTaxRateValue = new JLabel("$" + totalPlusTax);
+        lblTotalAndTaxRateValue.setBounds(310, 245, 200, 50);
+
+
+
+        JButton btnBuy = new JButton("Buy");
+        btnBuy.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                StringBuilder itemsSb = new StringBuilder();
+                int cartCounter = 0;
+                for (HashMap<String, String> item : cart){
+                    if (cartCounter == 0){
+                        itemsSb.append(item.get("unitBought")).append(" ").append(item.get("name"));
+                        cartCounter += 1;
+                    } else {
+                        itemsSb.append(", ").append(item.get("unitBought")).append(" ").append(item.get("name"));
+                    }
+                }
+                Date currentDate = new Date();
+                String strTotal = lblTotalAndTaxRateValue.getText();
+                strTotal = strTotal.replace("$", "");
+                float flTotal = Float.parseFloat(strTotal);
+
+                SaleController.newSale(ClientController.getCurrentUser(), String.valueOf(itemsSb), currentDate, flTotal);
+                System.out.println(itemsSb);
+
+            }
+        });
+        btnBuy.setBounds(180, 295, 100, 40);
+
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                revalidate();
+                repaint();
+            }
+        });
+        btnCancel.setBounds(300, 295, 100, 40);
+
+        JButton btnSearch = new JButton("Search");
+        btnSearch.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String idForSearch = txtId.getText();
+                if (PackageController.findPackage(Integer.parseInt(idForSearch))){
+                    Package searchPack = PackageController.getPackage(Integer.parseInt(txtId.getText()));
+
+                    String[] pairs = searchPack.getItems().split(",\\s*");
+
+                    for (String pair : pairs) {
+                        HashMap<String, String> itemMap = new HashMap<>();
+                        // Split the pair by the first space to separate quantity and item
+                        String[] parts = pair.split("\\s+", 2);
+                        if (parts.length == 2) {
+                            int quantity = Integer.parseInt(parts[0].trim());
+                            String item = parts[1].trim();
+                            itemMap.put("name", item);
+                            itemMap.put("unitBought", String.valueOf(quantity));
+                            cart.add(itemMap);
+                        }
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                        "Package not found",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
+        btnSearch.setBounds(60, 295, 100, 40);
+
+
+
+        add(lblTitle);add(scrollPane);
+        add(lblTotal);add(lblTaxRate);add(lblTotalAndTaxRate);add(txtId);
+        add(lblTotalValue);add(lblTaxRateValue);add(lblTotalAndTaxRateValue);
+        add(btnBuy);add(btnCancel);add(btnSearch);
     }
 
     private void winLoginOptions() {
@@ -1163,9 +1307,9 @@ public class MyFrame extends JFrame {
         btnPackages.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
                 try {
-                    MyFrame Package = new MyFrame("Package", 750, 310, "packages");
+                    dispose();
+                    MyFrame buyPackage = new MyFrame("Buy Package", 440, 410, "buyPackage");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }

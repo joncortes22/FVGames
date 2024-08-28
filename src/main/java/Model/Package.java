@@ -11,6 +11,9 @@ public class Package {
         this.discount = discount;
     }
 
+    public Package() {
+    }
+
     public int getId() {
         return id;
     }

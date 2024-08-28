@@ -42,6 +42,8 @@ public class ItemController {
             }
         }
     }
+
+
     public static Item getItemSelected(String name){
         Item returnItem = null;
         for (Item item : inventory){

@@ -77,6 +77,9 @@ public class MyFrame extends JFrame {
             case "admin":
                 winAdminOptions();
                 break;
+            case "listSales":
+                winListSales();
+                break;
         }
 
         setVisible(true);
@@ -1074,7 +1077,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame Package = new MyFrame("Package", 750, 370, "packages");
+                    MyFrame Package = new MyFrame("Package", 600, 500, "packages");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -1088,12 +1091,13 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame Package = new MyFrame("Reports", 750, 310, "ListSales");
+                    MyFrame salesReport = new MyFrame("Sales Report", 650, 500, "listSales");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         });
+
 
         JButton btnLogOut = new JButton("Log Out");
         btnLogOut.setBounds(130, 240, 200, 30);
@@ -1289,75 +1293,121 @@ public class MyFrame extends JFrame {
     }
 
     private void winListSales() throws IOException {
-        // ... (código de creación del JFrame)
 
         // Campos de filtro y botones
-        JLabel lblCustomerId = new JLabel("Customer ID:");
-        lblCustomerId.setBounds(60, 30, 100, 30);
+        JLabel lblCustomerId = new JLabel("Customer ID (Numbers):");
+        lblCustomerId.setBounds(60, 30, 140, 30);
         JTextField txtCustomerId = new JTextField();
-        txtCustomerId.setBounds(160, 30, 100, 30);
+        txtCustomerId.setBounds(210, 30, 140, 30);
 
-        JLabel lblFromDate = new JLabel("From Date:");
-        lblFromDate.setBounds(60, 60, 100, 30);
+        JLabel lblFromDate = new JLabel("From Date (yyyy-mm-dd):");
+        lblFromDate.setBounds(60, 60, 140, 30);
         JTextField txtFromDate = new JTextField();
-        txtFromDate.setBounds(160, 60, 100, 30);
+        txtFromDate.setBounds(210, 60, 140, 30);
 
-        JLabel lblToDate = new JLabel("To Date:");
-        lblToDate.setBounds(60, 90, 100, 30);
+        JLabel lblToDate = new JLabel("To Date (yyyy-mm-dd):");
+        lblToDate.setBounds(60, 90, 140, 30);
         JTextField txtToDate = new JTextField();
-        txtToDate.setBounds(160, 90, 100, 30);
+        txtToDate.setBounds(210, 90, 140, 30);
 
-        JButton btnFilter = new JButton("Filter");
-        btnFilter.setBounds(60, 120, 100, 40);
+        JButton btnFilterById = new JButton("Filter by Customer Id");
+        btnFilterById.setBounds(60, 125, 160, 40);
+
+        JButton btnFilterByDate = new JButton("Filter by date");
+        btnFilterByDate.setBounds(230, 125, 140, 40);
 
         JButton btnResetFilters = new JButton("Reset Filters");
-        btnResetFilters.setBounds(180, 120, 120, 40);
+        btnResetFilters.setBounds(380, 125, 140, 40);
 
         // Table Model
         DefaultTableModel tableModel = new DefaultTableModel();
-        String[] columnNames = {"ID Cliente", "Items", "Fecha", "Agente Ventas", "Total"};
+        String[] columnNames = {"ID Cliente", "Items", "Fecha", "Total"};
         tableModel.setColumnIdentifiers(columnNames);
 
         // Table y JScrollPane
         JTable salesTable = new JTable(tableModel);
-        salesTable.setBounds(60, 170, 300, 200);
+        salesTable.setBounds(60, 180, 460, 200);
         JScrollPane scrollPane = new JScrollPane(salesTable);
-        scrollPane.setBounds(60, 170, 300, 200);
+        scrollPane.setBounds(60, 180, 460, 200);
 
-        // Add JFrame components
-        add(lblCustomerId);
-        add(txtCustomerId);
-        add(lblFromDate);
-        add(txtFromDate);
-        add(lblToDate);
-        add(txtToDate);
-        add(btnFilter);
-        add(btnResetFilters);
-        add(scrollPane);
-
-        btnFilter.addActionListener(new ActionListener() {
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String customerId = txtCustomerId.getText();
+                dispose();
+                try {
+                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        btnCancel.setBounds(450, 390, 90, 40);
+
+
+
+
+        btnFilterById.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int customerId = Integer.parseInt(txtCustomerId.getText());
                 String fromDateString = txtFromDate.getText();
                 String toDateString = txtToDate.getText();
+                String filterType = "customerId";
+                if (String.valueOf(customerId).isBlank() || String.valueOf(customerId).isEmpty() || String.valueOf(customerId) == null){
+                    JLabel  lblIncorrectValue = new JLabel("Incorrect Customer Id");
+                    lblIncorrectValue.setBounds(150, 230, 200, 30);
+                    add(lblIncorrectValue);
+                } else{
+                    // Filtrar la lista de ventas según las entradas proporcionadas (customerId, fromDate, toDate)
+                    ArrayList<Sale> filteredSales = SaleController.filterSales(customerId, fromDateString, toDateString, filterType);
 
-                // Implementar tu lógica de filtrado aquí, posiblemente utilizando consultas a la base de datos
+                    // Limpiar los datos existentes en el modelo de tabla
+                    tableModel.setRowCount(0);
 
-                // Filtrar la lista de ventas según las entradas proporcionadas (customerId, fromDate, toDate)
-                ArrayList<Sale> filteredSales = SaleController.filterSales(sales, customerId, fromDateString, toDateString);
+                    // Agregar los datos de las ventas filtradas al modelo de tabla
+                    for (Sale sale : filteredSales) {
+                        Object[] rowData = {sale.getCustomerId(), sale.getItems(), SaleController.formatDate(sale.getDate()), sale.getTotal()};
+                        tableModel.addRow(rowData);
+                    }
 
-                // Limpiar los datos existentes en el modelo de tabla
-                tableModel.setRowCount(0);
-
-                // Agregar los datos de las ventas filtradas al modelo de tabla
-                for (Sale sale : filteredSales) {
-                    Object[] rowData = {sale.getCustomerId(), sale.getItems(), SaleController.formatDate(sale.getDate()), sale.getTotal()};
-                    tableModel.addRow(rowData);
+                    revalidate();
+                    repaint();
                 }
 
-                revalidate();
-                repaint();
+
+            }
+        });
+
+        btnFilterByDate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //int customerId = Integer.parseInt(txtCustomerId.getText());
+                String fromDateString = txtFromDate.getText();
+                String toDateString = txtToDate.getText();
+                String filterType = "date";
+
+                if (fromDateString.isEmpty() || toDateString.isEmpty() || !fromDateString.contains("-") || !toDateString.contains("-") || fromDateString == null || toDateString == null){
+                    JLabel  lblIncorrectDate = new JLabel("Incorrect Dates Format");
+                    lblIncorrectDate.setBounds(150, 230, 200, 30);
+                    add(lblIncorrectDate);
+                } else {
+                    // Filtrar la lista de ventas según las entradas proporcionadas (customerId, fromDate, toDate)
+                    ArrayList<Sale> filteredSales = SaleController.filterSales(0, fromDateString, toDateString, filterType);
+
+                    // Limpiar los datos existentes en el modelo de tabla
+                    tableModel.setRowCount(0);
+
+                    // Agregar los datos de las ventas filtradas al modelo de tabla
+                    for (Sale sale : filteredSales) {
+                        Object[] rowData = {sale.getCustomerId(), sale.getItems(), SaleController.formatDate(sale.getDate()), sale.getTotal()};
+                        tableModel.addRow(rowData);
+                    }
+
+                    revalidate();
+                    repaint();
+                }
+
             }
         });
 
@@ -1381,12 +1431,18 @@ public class MyFrame extends JFrame {
             }
         });
 
-        // Verificar si la lista de ventas está vacía y mostrar un mensaje si es necesario
-        if (sales.isEmpty()) {
-            JLabel lblNoSalesMessage = new JLabel("No se encontraron ventas.");
-            lblNoSalesMessage.setBounds(150, 230, 200, 30);
-            add(lblNoSalesMessage);
-        }
+        // Add JFrame components
+        add(lblCustomerId);
+        add(txtCustomerId);
+        add(lblFromDate);
+        add(txtFromDate);
+        add(lblToDate);
+        add(txtToDate);
+        add(btnFilterByDate);
+        add(btnFilterById);
+        add(btnResetFilters);
+        add(scrollPane);
+        add(btnCancel);
     }
 
 }

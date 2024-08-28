@@ -64,7 +64,7 @@ public class SaleModelDB {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("SELECT CustomerID,  Items, Date, SalesAgent, Total, C.Name as CustomerName, C.LastName as CustomerLastName, C.email, C.preferedPaymentMethod\n" +
+            conexion.setConsulta("SELECT CustomerID,  Items, Date, Total, C.Name as CustomerName, C.LastName as CustomerLastName, C.email, C.preferedPaymentMethod\n" +
                     "FROM Sales S\n" +
                     "INNER Join Customer C ON S.CustomerID = C.id\n" +
                     "WHERE CustomerID = " + customerId);
@@ -86,24 +86,28 @@ public class SaleModelDB {
         return null;
     }
 
-    public ArrayList<Sale> getSalesByIntervalTime(Date fromDate, Date toDate)
+    public ArrayList<Sale> getSalesByIntervalTime(String fromDate, String toDate)
     {
         try
         {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("SELECT  CustomerId, Items, Date, SalesAgent, Total" +
+            conexion.setConsulta("SELECT CustomerId, Items, [Date], Total " +
                     "FROM SALES\n" +
-                    "WHERE DATE >= '" + fromDate + "'\n" +
-                    "AND DATE <= '" + toDate + "'");
+                    "WHERE [Date] >= '" + fromDate + "'\n" +
+                    "AND [Date] <= '" + toDate + "'");
             //Obtenemos los resultados
             resultado = conexion.getResultado();
             ArrayList<Sale> sm_list = new ArrayList<Sale>();
-            while(resultado.next())
-            {
-                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"));
-                sm_list.add(sale_model);
+            if (resultado != null){
+                while(resultado.next())
+                {
+                    Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getFloat("Total"));
+                    sm_list.add(sale_model);
+                }
+            } else {
+                return sm_list;
             }
             conexion.cerrarConexion();
             return sm_list;

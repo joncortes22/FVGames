@@ -21,28 +21,26 @@ public class SaleController {
         String formattedDate = formatter.format(date);
         smdb.registerSale(customerId, items, formattedDate, total);
     }
-    public static ArrayList<Sale> filterSales(ArrayList<Sale> sales, String customerId, String fromDateString, String toDateString) {
+
+
+    public static ArrayList<Sale> filterSales(int customerId, String fromDateString, String toDateString, String filterType) {
         ArrayList<Sale> filteredSales = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        try {
-            Date fromDate = sdf.parse(fromDateString);
-            Date toDate = sdf.parse(toDateString);
-
-            for (Sale sale : sales) {
-                if (
-                        (customerId.isEmpty() || String.valueOf(sale.getCustomerId()).equals(customerId)) &&
-                                (fromDate.before(sale.getDate()) || fromDate.equals(sale.getDate())) &&
-                                (toDate.after(sale.getDate()) || toDate.equals(sale.getDate()))
-                ) {
-                    filteredSales.add(sale);
+        switch (filterType){
+            case "customerId":
+                filteredSales = smdb.getSalesByCustomer(customerId);
+                break;
+            case "date":
+                try {
+                    filteredSales = smdb.getSalesByIntervalTime(fromDateString, toDateString);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid Date Format.");
+                    return filteredSales;
                 }
-            }
-        } catch (Exception ex) {
-
-            JOptionPane.showMessageDialog(null, "Formato de fecha inválido.");
+                break;
+            default:
         }
-
         return filteredSales;
     }
 

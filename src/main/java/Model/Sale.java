@@ -56,4 +56,9 @@ public class Sale {
     public void setTotal(int total) {
         this.total = total;
     }
+
+    public String toString() {
+        // Formato de fecha: yyyy-MM-dd
+        return customerId + ", " + items + ", " + date.toString() + ", " + salesAgent + ", $" + total;
+    }
 }

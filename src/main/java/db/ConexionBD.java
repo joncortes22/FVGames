@@ -11,14 +11,14 @@ import java.sql.*;
  * @author deiv
  */
 public class ConexionBD {
-    
+
     //Datos de gestión de BD
     Connection conexion = null;
     PreparedStatement consulta = null;
     ResultSet resultado = null;
-    
+
     //Parámetros de inicialización de BD
-    String url = "jdbc:mysql://127.0.0.1:3308/fvgames";
+    String url = "jdbc:sqlserver://evs-dac.database.windows.net:1433;database=FVGames;user=FVGamesAdmin;password=Admin123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
     String username = "FVGamesAdmin";
     String password = "Admin123";
 
@@ -55,7 +55,7 @@ public class ConexionBD {
     public void setConexion() {
         try
         {
-            this.conexion = DriverManager.getConnection(url, username, password);
+            conexion = DriverManager.getConnection(url);//, username, password);
             System.out.println("Successful connected");
         }
         catch(SQLException e)
@@ -74,7 +74,7 @@ public class ConexionBD {
             e.printStackTrace();
         }
     }
-    
+
     public void cerrarConexion()
     {
         if(resultado != null)
@@ -88,7 +88,7 @@ public class ConexionBD {
                 e.printStackTrace();
             }
         }
-        
+
         if(consulta != null)
         {
             try
@@ -100,7 +100,7 @@ public class ConexionBD {
                 e.printStackTrace();
             }
         }
-        
+
         if(conexion != null)
         {
             try

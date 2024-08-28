@@ -21,7 +21,7 @@ public class ClientModelDB {
             conexion.setConexion();
             //Definimos la consulta
             conexion.setConsulta("SELECT U.id as UserId, username, password, Roleid, R.role as RoleType, C.id as CustomerId, C.Name as CustomerName, C.lastName as CustomerLastName, Address, MoneySum, PreferedPaymentMethod\n" +
-                    "FROM User U\n" +
+                    "FROM [User] U\n" +
                     "INNER JOIN RoleCatalog R ON U.RoleId = R.id\n" +
                     "INNER JOIN Customer C ON U.id = C.id\n" +
                     "WHERE U.roleid = 2");

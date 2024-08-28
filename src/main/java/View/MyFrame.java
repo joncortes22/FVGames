@@ -794,7 +794,6 @@ public class MyFrame extends JFrame {
                     StringBuilder sb = new StringBuilder();
                     for (String key : productsAdded.keySet()) {
                         Integer value = productsAdded.get(key);
-                        System.out.println("Key: " + key + ", Value: " + value);
                         if (countStr == 0){
                             sb.append(value).append(" ").append(key);
                             countStr += 1;

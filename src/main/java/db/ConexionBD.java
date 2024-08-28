@@ -55,8 +55,7 @@ public class ConexionBD {
     public void setConexion() {
         try
         {
-            conexion = DriverManager.getConnection(url);//, username, password);
-            System.out.println("Successful connected");
+            conexion = DriverManager.getConnection(url);
         }
         catch(SQLException e)
         {

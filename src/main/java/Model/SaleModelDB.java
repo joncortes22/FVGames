@@ -87,5 +87,34 @@ public class SaleModelDB {
         return null;
     }
 
+    public ArrayList<Sale> getSalesByIntervalTime(Date fromDate, Date toDate)
+    {
+        try
+        {
+            //Abrimos la conexión
+            conexion.setConexion();
+            //Definimos la consulta
+            conexion.setConsulta("SELECT  CustomerId, Items, Date, SalesAgent, Total" +
+                    "FROM SALES\n" +
+                    "WHERE DATE >= '" + fromDate + "'\n" +
+                    "AND DATE <= '" + toDate + "'");
+            //Obtenemos los resultados
+            resultado = conexion.getResultado();
+            ArrayList<Sale> sm_list = new ArrayList<Sale>();
+            while(resultado.next())
+            {
+                Sale sale_model = new Sale(resultado.getInt("CustomerID"), resultado.getString("Items"), resultado.getDate("Date"), resultado.getInt("Total"),resultado.getString("SalesAgent"));
+                sm_list.add(sale_model);
+            }
+            conexion.cerrarConexion();
+            return sm_list;
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }

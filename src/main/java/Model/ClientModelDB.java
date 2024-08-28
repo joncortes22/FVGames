@@ -20,11 +20,11 @@ public class ClientModelDB {
             //Abrimos la conexión
             conexion.setConexion();
             //Definimos la consulta
-            conexion.setConsulta("SELECT U.id as AdminId, Username, Password, Roleid, R.Role\n" +
-                    "FROM user U\n" +
-                    "INNER JOIN rolecatalog R ON U.RoleId = R.id\n" +
-                    "WHERE U.RoleId = 2");
-
+            conexion.setConsulta("SELECT U.id as UserId, username, password, Roleid, R.role as RoleType, C.id as CustomerId, C.Name as CustomerName, C.lastName as CustomerLastName, Address, MoneySum, PreferedPaymentMethod\n" +
+                    "FROM [User] U\n" +
+                    "INNER JOIN RoleCatalog R ON U.RoleId = R.id\n" +
+                    "INNER JOIN Customer C ON U.id = C.id\n" +
+                    "WHERE U.roleid = 2");
             //Obtenemos los resultados
             resultado = conexion.getResultado();
             ArrayList<Client> am_list = new ArrayList<Client>();

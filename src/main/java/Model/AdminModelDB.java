@@ -18,7 +18,7 @@ public class AdminModelDB {
             conexion.setConexion();
             //Definimos la consulta
             conexion.setConsulta("SELECT U.id as AdminId, Username, Password, Roleid, R.Role\n" +
-                    "FROM user U\n" +
+                    "FROM [user] U\n" +
                     "INNER JOIN rolecatalog R ON U.RoleId = R.id\n" +
                     "WHERE U.RoleId = 1");
 

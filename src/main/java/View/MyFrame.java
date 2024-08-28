@@ -3,8 +3,10 @@ package View;
 import Controller.AdminController;
 import Controller.ClientController;
 import Controller.ItemController;
+import Controller.SaleController;
 import Model.Item;
 import Model.ItemModelDB;
+import Model.Sale;
 import Program.Main;
 
 import javax.swing.*;
@@ -22,9 +24,14 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 import java.util.Map;
+import javax.swing.table.DefaultTableModel;
+import java.util.Date;
+
+import java.text.SimpleDateFormat; // for date formatting
 public class MyFrame extends JFrame {
 
     static ArrayList<HashMap<String, String>> cart = new ArrayList<>();
+    static ArrayList<Sale> sales = new ArrayList<>();
 
     public MyFrame(String name, int width, int height, String winCall) throws IOException {
         /*
@@ -67,9 +74,6 @@ public class MyFrame extends JFrame {
                 break;
             case "admin":
                 winAdminOptions();
-                break;
-            case "editItem":
-                winEditItem();
                 break;
         }
 
@@ -229,7 +233,7 @@ public class MyFrame extends JFrame {
         /*
          * Este método declara y añade los objetos del menú principal
          * */
-        
+
 
         AtomicInteger cartCount = new AtomicInteger(0);
 
@@ -376,7 +380,7 @@ public class MyFrame extends JFrame {
     }
 
     private void winFinishPurchase() throws IOException {
-         /** Este método declara y añade los objetos del menú principal
+        /** Este método declara y añade los objetos del menú principal
          * */
 
 
@@ -479,10 +483,10 @@ public class MyFrame extends JFrame {
         txtUser.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-            char c = e.getKeyChar();
-            if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
-                e.consume();  // Ignore the key event
-            }
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();  // Ignore the key event
+                }
             }
         });
 
@@ -599,7 +603,7 @@ public class MyFrame extends JFrame {
 
     private void winPackages() throws IOException {
 
-         /** Este método declara y añade los objetos del menú principal
+        /** Este método declara y añade los objetos del menú principal
          * */
 
 
@@ -794,10 +798,10 @@ public class MyFrame extends JFrame {
         txtPrice.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-            char c = e.getKeyChar();
-            if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
-                e.consume();  // Ignore the key event
-            }
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();  // Ignore the key event
+                }
             }
         });
 
@@ -979,7 +983,7 @@ public class MyFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 try {
-                    MyFrame editItem = new MyFrame("Edit Item", 480, 400, "editItem");
+                    MyFrame newClient = new MyFrame("Create User", 480, 550, "newClient");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -1001,8 +1005,19 @@ public class MyFrame extends JFrame {
             }
         });
 
-        JButton btnReports = new JButton("Reports");
+        JButton btnReports = new JButton("Sales Report");
         btnReports.setBounds(130, 200, 200, 30);
+        btnReports.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                try {
+                    MyFrame Package = new MyFrame("Reports", 750, 310, "ListSales");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
 
         JButton btnLogOut = new JButton("Log Out");
         btnLogOut.setBounds(130, 240, 200, 30);
@@ -1126,100 +1141,105 @@ public class MyFrame extends JFrame {
         JTextField txtPrice = new JTextField();
         txtPrice.setBounds(170, 230, 200, 30);
 
-        txtPrice.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            char c = e.getKeyChar();
-            if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
-                e.consume();  // Ignore the key event
-            }
-            }
-        });
+    private void winListSales() throws IOException {
+        // ... (código de creación del JFrame)
 
-        JComboBox<String> cmbProducts;
-        cmbProducts = new JComboBox<>(ItemController.getAllAvailableProductNames());
-        cmbProducts.setBounds(170, 80, 200, 30);
-        cmbProducts.addActionListener(new ActionListener() {
+        // Campos de filtro y botones
+        JLabel lblCustomerId = new JLabel("Customer ID:");
+        lblCustomerId.setBounds(60, 30, 100, 30);
+        JTextField txtCustomerId = new JTextField();
+        txtCustomerId.setBounds(160, 30, 100, 30);
+
+        JLabel lblFromDate = new JLabel("From Date:");
+        lblFromDate.setBounds(60, 60, 100, 30);
+        JTextField txtFromDate = new JTextField();
+        txtFromDate.setBounds(160, 60, 100, 30);
+
+        JLabel lblToDate = new JLabel("To Date:");
+        lblToDate.setBounds(60, 90, 100, 30);
+        JTextField txtToDate = new JTextField();
+        txtToDate.setBounds(160, 90, 100, 30);
+
+        JButton btnFilter = new JButton("Filter");
+        btnFilter.setBounds(60, 120, 100, 40);
+
+        JButton btnResetFilters = new JButton("Reset Filters");
+        btnResetFilters.setBounds(180, 120, 120, 40);
+
+        // Table Model
+        DefaultTableModel tableModel = new DefaultTableModel();
+        String[] columnNames = {"ID Cliente", "Items", "Fecha", "Agente Ventas", "Total"};
+        tableModel.setColumnIdentifiers(columnNames);
+
+        // Table y JScrollPane
+        JTable salesTable = new JTable(tableModel);
+        salesTable.setBounds(60, 170, 300, 200);
+        JScrollPane scrollPane = new JScrollPane(salesTable);
+        scrollPane.setBounds(60, 170, 300, 200);
+
+        // Add JFrame components
+        add(lblCustomerId);
+        add(txtCustomerId);
+        add(lblFromDate);
+        add(txtFromDate);
+        add(lblToDate);
+        add(txtToDate);
+        add(btnFilter);
+        add(btnResetFilters);
+        add(scrollPane);
+
+        btnFilter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedProduct = (String) cmbProducts.getSelectedItem();
-                if (selectedProduct != null){
-                    Item selectedItem = new Item(ItemController.getItemSelected(selectedProduct));
-                    txtItemName.setText(String.valueOf(selectedItem.getName()));
-                    spnQuantity.setValue(selectedItem.getAvailability());
-                    txtPrice.setText(String.valueOf(selectedItem.getUnitPrice()));
-                }
-            }
-        });
+                String customerId = txtCustomerId.getText();
+                String fromDateString = txtFromDate.getText();
+                String toDateString = txtToDate.getText();
 
-        JLabel lblQuantity = new JLabel("Quantity:");
-        lblQuantity.setBounds(60, 170, 200, 50);
+                // Implementar tu lógica de filtrado aquí, posiblemente utilizando consultas a la base de datos
 
-        JLabel lblPrice = new JLabel("Unit Price ($):");
-        lblPrice.setBounds(60, 220, 200, 50);
+                // Filtrar la lista de ventas según las entradas proporcionadas (customerId, fromDate, toDate)
+                ArrayList<Sale> filteredSales = SaleController.filterSales(sales, customerId, fromDateString, toDateString);
 
+                // Limpiar los datos existentes en el modelo de tabla
+                tableModel.setRowCount(0);
 
-
-        JButton btnAddProduct = new JButton("Add");
-        btnAddProduct.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = txtItemName.getText();
-                int availability = (int) spnQuantity.getValue();
-                String unitPrice = txtPrice.getText();
-
-                String selectedProduct = (String) cmbProducts.getSelectedItem();
-                Item selectedItem = new Item(ItemController.getItemSelected(selectedProduct));
-                if (name.isEmpty() || unitPrice.isEmpty()){
-                    if (!selectedItem.getName().equals(name) && ItemController.validateNameExistance(name)){
-                        JOptionPane.showMessageDialog(null,
-                                "Product Name Already Exists",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    JOptionPane.showMessageDialog(null,
-                            "All Fields are Required",
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
+                // Agregar los datos de las ventas filtradas al modelo de tabla
+                for (Sale sale : filteredSales) {
+                    Object[] rowData = {sale.getCustomerId(), sale.getItems(), formatDate(sale.getDate()), sale.getSalesAgent(), sale.getTotal()};
+                    tableModel.addRow(rowData);
                 }
 
-                int unitPriceAux = Integer.parseInt(unitPrice);
-                ItemController.editItem(selectedItem.getId(), name, availability, unitPriceAux);
-
-                JOptionPane.showMessageDialog(null, "Item Updated Successfully", "Item Updated", JOptionPane.INFORMATION_MESSAGE);
-                spnQuantity.setValue(1);
-                cmbProducts.setSelectedIndex(0);
-                txtItemName.setText("");
-                txtPrice.setText("");
                 revalidate();
                 repaint();
-
-
             }
         });
 
-        btnAddProduct.setBounds(170, 280, 90, 40);
-
-        JButton btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(new ActionListener() {
+        // Manejar el clic del botón de restablecer filtros
+        btnResetFilters.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dispose();
-                try {
-                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+                txtCustomerId.setText("");
+                txtFromDate.setText("");
+                txtToDate.setText("");
+
+                // Mostrar todas las ventas en el modelo de tabla
+                tableModel.setRowCount(0);
+                for (Sale sale : sales) {
+                    Object[] rowData = {sale.getCustomerId(), sale.getItems(), formatDate(sale.getDate()), sale.getSalesAgent(), sale.getTotal()};
+                    tableModel.addRow(rowData);
                 }
+
+                revalidate();
+                repaint();
             }
         });
-        btnCancel.setBounds(280, 280, 90, 40);
 
-        add(lblTitle);add(lblProduct);add(lblQuantity);add(lblFilter);add(lblPrice);
-        add(txtItemName);add(txtPrice);
-        add(spnQuantity);add(cmbProducts);
-        add(btnAddProduct);add(btnCancel);
+        // Verificar si la lista de ventas está vacía y mostrar un mensaje si es necesario
+        if (sales.isEmpty()) {
+            JLabel lblNoSalesMessage = new JLabel("No se encontraron ventas.");
+            lblNoSalesMessage.setBounds(150, 230, 200, 30);
+            add(lblNoSalesMessage);
+        }
     }
 
 }

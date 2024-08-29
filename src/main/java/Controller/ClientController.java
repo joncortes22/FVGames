@@ -45,5 +45,6 @@ public class ClientController {
         Client newClient = new Client(id, name, lastName, address, email, moneySum, paymentMethod, password);
         clients.add(newClient);
         cmdb.insertNewCustomer(String.valueOf(id), password, name, lastName, address, email, moneySum, paymentMethod);
+        clients = cmdb.getAllUsers();
     }
 }

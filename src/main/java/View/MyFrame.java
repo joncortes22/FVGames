@@ -212,6 +212,7 @@ public class MyFrame extends JFrame {
                 txtId.setText("");
                 txtAddress.setText("");
                 txtEmail.setText("");
+                txtPassword.setText("");
                 txtMoneyBalance.setText("");
                 cmbPaymentMethod.setSelectedIndex(0);
                 revalidate();
@@ -478,6 +479,7 @@ public class MyFrame extends JFrame {
                 float flTotal = Float.parseFloat(strTotal);
 
                 SaleController.newSale(ClientController.getCurrentUser(), String.valueOf(itemsSb), currentDate, flTotal);
+                JOptionPane.showMessageDialog(null, "Sale Completed Successfully", "Item Added", JOptionPane.INFORMATION_MESSAGE);
                 cart.clear();
 
             }
@@ -488,9 +490,12 @@ public class MyFrame extends JFrame {
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                revalidate();
-                repaint();
+                dispose();
+                try {
+                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         btnCancel.setBounds(180, 295, 100, 40);
@@ -594,9 +599,12 @@ public class MyFrame extends JFrame {
         btnCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                revalidate();
-                repaint();
+                dispose();
+                try {
+                    MyFrame admin = new MyFrame("Admin Menu", 480, 355, "admin");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         btnCancel.setBounds(300, 295, 100, 40);
@@ -621,9 +629,19 @@ public class MyFrame extends JFrame {
                             String item = parts[1].trim();
                             itemMap.put("name", item);
                             itemMap.put("unitBought", String.valueOf(quantity));
+                            itemMap.put("unitPrice", String.valueOf(ItemController.getPriceByName(item)));
                             cart.add(itemMap);
                         }
                     }
+                    String[] listData = new String[cart.size()];
+                    int counter = 0, purchaseTotal = 0;
+                    for (HashMap<String, String> item : cart){
+                        int itemTotal = Integer.parseInt(item.get("unitPrice")) * Integer.parseInt(item.get("unitBought"));
+                        purchaseTotal = purchaseTotal + itemTotal;
+                        listData[counter] = item.get("name") + " x" + item.get("unitBought") + " = $" + String.valueOf(itemTotal);
+                        counter++;
+                    }
+
                 } else {
                     JOptionPane.showMessageDialog(null,
                         "Package not found",

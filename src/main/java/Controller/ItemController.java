@@ -19,6 +19,7 @@ public class ItemController {
         Item newItem = new Item(category, name, availability, unitPrice);
         inventory.add(newItem);
         imdb.insertNewProduct(category, name, availability, unitPrice);
+        inventory = imdb.getAllStock();
     }
 
     public Item[] getProductsByCategory(String category){
@@ -29,6 +30,17 @@ public class ItemController {
             }
         }
         return itemList.toArray(new Item[0]);
+    }
+
+
+    public static int getPriceByName(String name){
+        int unitPrice = 0;
+        for (Item item : inventory){
+            if (item.getName().equals(name)){
+                unitPrice = item.getUnitPrice();
+            }
+        }
+        return unitPrice;
     }
 
     public static void editItem(int id, String name, int availability, int unitPrice){

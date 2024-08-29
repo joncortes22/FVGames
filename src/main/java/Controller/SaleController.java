@@ -20,6 +20,7 @@ public class SaleController {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = formatter.format(date);
         smdb.registerSale(customerId, items, formattedDate, total);
+        sales = smdb.getAllSales();
     }
 
 

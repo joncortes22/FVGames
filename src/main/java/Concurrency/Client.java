@@ -17,8 +17,8 @@ public class Client {
     }
 
     public void start() throws IOException {
-        //MyFrame login = new MyFrame("Login for Client", 480, 400, "login");
-        MyFrame buyPackage = new MyFrame("Buy Package", 440, 410, "buyPackage");
+        MyFrame login = new MyFrame("Login for Client", 480, 400, "login");
+        //MyFrame buyPackage = new MyFrame("Buy Package", 440, 410, "buyPackage");
         try {
             System.out.println("Connecting to server...");
             clientSocket = new Socket(host, port);

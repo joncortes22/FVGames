@@ -18,8 +18,8 @@ public class ConexionBD {
     ResultSet resultado = null;
 
     //Parámetros de inicialización de BD
-    String url = "jdbc:sqlserver://evs-dac.database.windows.net:1433;database=FVGames;user=FVGamesAdmin;password=Admin123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
-    String username = "FVGamesAdmin";
+    String url = "jdbc:sqlserver://jcc-server.database.windows.net:1433;database=FVGames;user=FVGamesAdmin1;password=Admin123;encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;";
+    String username = "FVGamesAdmin1";
     String password = "Admin123";
 
 
